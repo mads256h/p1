@@ -12,9 +12,9 @@ int main(void)
   json_object *test_json = json_tokener_parse(
     "{\"test\":\"hello\", \"json\": \"sucks\", \"int\": 123, \"double\": "
     "0.123, \"object\": {\"int1\": 1, \"int2\": 2, \"int3\": 3, \"int4\": 4, "
-    "\"int5\": 5, \"int6\": 6, \"object2\": {\"bruh\": \"moment\"}}, "
-    "\"array\": [1, 2, 3, 4, 5, 6, 7, 8, 9], "
-    "\"null\": null, \"boolean\": true}");
+    "\"int5\": 5, \"int6\": 6, \"object2\": {\"bruh\": \"moment\"}, \"empty\": "
+    "{}}, \"array\": [1, 2, 3, 4, 5, 6, 7, 8, 9], \"null\": null, \"boolean\": "
+    "true}");
 
   if (!test_json) {
     fprintf(stderr, "Parse failed\n");
@@ -34,7 +34,7 @@ void print_json_object(json_object *json, int indent, int is_object)
   type = json_object_get_type(json);
 
   if (!is_object && type != json_type_array && type != json_type_object) {
-    for (i = 0; i < indent * 2; i++) { printf(" "); }
+    for (i = 0; i < indent; i++) { printf("  "); }
   }
 
   switch (type) {
@@ -55,7 +55,7 @@ void print_json_object(json_object *json, int indent, int is_object)
     printf("(json_type_object)\n");
     json_object_object_foreach(json, key, val)
     {
-      for (i = 0; i < (indent + 1) * 2; i++) { printf(" "); }
+      for (i = 0; i < indent + 1; i++) { printf("  "); }
       printf("%s: ", key);
       print_json_object(val, indent + 1, 1);
     }
