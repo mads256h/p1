@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void print_json_object(json_object *json, int indent, int is_object);
+void print_json_object(json_object *const json, const int indent, const int is_object);
 
 int main(void)
 {
@@ -26,7 +26,7 @@ int main(void)
   return EXIT_SUCCESS;
 }
 
-void print_json_object(json_object *json, int indent, int is_object)
+void print_json_object(json_object *const json, const int indent, const int is_object)
 {
   int i;
   enum json_type type;
