@@ -1,4 +1,4 @@
-name: CMake Ubuntu
+name: CMake MacOS
 
 on: [push]
 
