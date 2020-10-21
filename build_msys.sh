@@ -2,4 +2,4 @@
 
 
 cmake . -DCMAKE_GENERATOR="MinGW Makefiles"
-make
+mingw32-make.exe
