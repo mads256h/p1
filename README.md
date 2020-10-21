@@ -1,5 +1,9 @@
 # p1
 
+![CMake Windows](https://github.com/mads256h/p1/workflows/CMake%20Windows/badge.svg)
+![CMake MacOS](https://github.com/mads256h/p1/workflows/CMake%20MacOS/badge.svg)
+![CMake Ubuntu](https://github.com/mads256h/p1/workflows/CMake%20Ubuntu/badge.svg)
+
 This repository is built with cmake.
 It has these dependencies:
 
