@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 void print_json_object(json_object *const json,
-  const int indent,
+  const size_t indent,
   const int is_object);
 
 int main(void)
@@ -23,16 +23,16 @@ int main(void)
     return EXIT_FAILURE;
   }
 
-  print_json_object(test_json, 0, 0);
+  print_json_object(test_json, (size_t)0, 0);
   json_object_put(test_json);
   return EXIT_SUCCESS;
 }
 
 void print_json_object(json_object *const json,
-  const int indent,
+  const size_t indent,
   const int is_object)
 {
-  int i;
+  size_t i;
   enum json_type type;
 
   type = json_object_get_type(json);
