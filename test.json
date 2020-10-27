@@ -1,0 +1,31 @@
+{
+    "test": "hellossssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "json": "sucksaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaas",
+    "int": 123,
+    "double": 0.123,
+    "object": {
+        "int1": 1,
+        "int2": 2,
+        "int3": 3,
+        "int4": 4,
+        "int5": 5,
+        "int6": 6,
+        "object2": {
+            "bruh": "moment"
+        },
+        "empty": {}
+    },
+    "array": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "null": null,
+    "boolean": true
+}

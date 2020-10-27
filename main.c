@@ -4,6 +4,11 @@
 #include <json-c/json_tokener.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define BUFFER_SIZE 512
+
+char *read_json(const char *filename);
 
 void print_json_object(json_object *const json,
   const int indent,
@@ -11,12 +16,9 @@ void print_json_object(json_object *const json,
 
 int main(void)
 {
-  json_object *test_json = json_tokener_parse(
-    "{\"test\":\"hello\", \"json\": \"sucks\", \"int\": 123, \"double\": "
-    "0.123, \"object\": {\"int1\": 1, \"int2\": 2, \"int3\": 3, \"int4\": 4, "
-    "\"int5\": 5, \"int6\": 6, \"object2\": {\"bruh\": \"moment\"}, \"empty\": "
-    "{}}, \"array\": [1, 2, 3, 4, 5, 6, 7, 8, 9], \"null\": null, \"boolean\": "
-    "true}");
+  char *buffer = read_json("real.json");
+  json_object *test_json = json_tokener_parse(buffer);
+  free(buffer);
 
   if (!test_json) {
     fprintf(stderr, "Parse failed\n");
@@ -26,6 +28,25 @@ int main(void)
   print_json_object(test_json, 0, 0);
   json_object_put(test_json);
   return EXIT_SUCCESS;
+}
+
+char *read_json(const char *filename)
+{
+  int c, i = 0, cur_size = BUFFER_SIZE;
+  char *buffer = malloc(BUFFER_SIZE);
+
+  FILE *file = fopen(filename, "r");
+  while ((c = getc(file)) != EOF) {
+    if ((i + 1) > cur_size) {
+      buffer = realloc(buffer, cur_size += BUFFER_SIZE);
+    }
+    buffer[i] = c;
+    i++;
+  }
+  buffer[i] = 0;
+  fclose(file);
+  printf("Current size: %d, i = %d\n", cur_size, i);
+  return buffer;
 }
 
 void print_json_object(json_object *const json,
