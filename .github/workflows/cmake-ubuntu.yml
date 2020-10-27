@@ -51,4 +51,4 @@ jobs:
 
     - name: The job has failed
       if: ${{ failure() }}
-      run: cat $GITHUB_WORKSPACE/Testing/Temporary/LastTest.log
+      run: cat $${{runner.workspace}}/build/Testing/Temporary/LastTest.log
