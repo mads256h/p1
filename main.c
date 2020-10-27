@@ -2,17 +2,35 @@
 #include <json-c/json_object.h>
 #include <json-c/json_object_iterator.h>
 #include <json-c/json_tokener.h>
+#include <json-c/json_visit.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define BUFFER_SIZE 512
 
+struct find_jso_key_userarg
+{
+  const char *key;
+  json_object *value;
+  size_t index;
+};
+
 char *read_json(const char *filename);
 
 void print_json_object(json_object *const json,
   const size_t indent,
   const int is_object);
+
+
+json_c_visit_userfunc find_jso_key_visitor;
+
+json_object *find_jso_key(json_object *jso, const char *key);
+
+json_object *json_object_get_key(json_object *jso, const char *key);
+
+json_object *get_from_index(json_object *jso, size_t index);
 
 int main(void)
 {
@@ -25,7 +43,31 @@ int main(void)
     return EXIT_FAILURE;
   }
 
-  print_json_object(test_json, (size_t)0, 0);
+  json_object *rows_jso = find_jso_key(test_json, "Rows");
+
+  for (int i = 0; i < 24; i++) {
+
+    json_object *first_jso = get_from_index(rows_jso, (size_t)i);
+
+    json_object *name_jso = json_object_get_key(first_jso, "Name");
+
+    printf("%s\n", json_object_get_string(name_jso));
+
+
+    json_object *columns_jso = find_jso_key(first_jso, "Columns");
+    for (int j = 0; j < 2; j++) {
+      json_object *column_jso = get_from_index(columns_jso, j);
+      json_object *column_name_jso = json_object_get_key(column_jso, "Name");
+      json_object *column_value_jso = json_object_get_key(column_jso, "Value");
+
+      printf("  %s: %s\n",
+        json_object_get_string(column_name_jso),
+        json_object_get_string(column_value_jso));
+    }
+
+    // print_json_object(first_jso, (size_t)0, 0);
+  }
+
   json_object_put(test_json);
   return EXIT_SUCCESS;
 }
@@ -100,4 +142,53 @@ void print_json_object(json_object *const json,
   }
 
   printf("\n");
+}
+
+int find_jso_key_visitor(json_object *jso,
+  int flags,
+  json_object *parent_jso,
+  const char *jso_key,
+  size_t *jso_index,
+  void *userarg)
+{
+  struct find_jso_key_userarg *find_jso_struct = userarg;
+
+
+  if (jso_key && strcmp(jso_key, find_jso_struct->key) == 0) {
+
+    find_jso_struct->value = jso;
+    find_jso_struct->index = jso_index ? *jso_index : SIZE_MAX;
+
+    return JSON_C_VISIT_RETURN_STOP;
+  }
+  return JSON_C_VISIT_RETURN_CONTINUE;
+}
+
+json_object *find_jso_key(json_object *jso, const char *key)
+{
+  struct find_jso_key_userarg find_jso_struct;
+  find_jso_struct.key = key;
+  find_jso_struct.value = 0;
+  find_jso_struct.index = SIZE_MAX;
+
+  json_c_visit(jso, 0, find_jso_key_visitor, &find_jso_struct);
+
+  return find_jso_struct.value;
+}
+
+
+json_object *json_object_get_key(json_object *jso, const char *key)
+{
+  json_object_object_foreach(jso, jso_key, jso_val)
+  {
+    if (strcmp(key, jso_key) == 0) { return jso_val; }
+  }
+
+  return 0;
+}
+
+
+json_object *get_from_index(json_object *jso, size_t index)
+{
+  return json_object_array_get_idx(jso, index);
 }
