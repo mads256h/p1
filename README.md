@@ -64,8 +64,7 @@ gcc make cmake json-c
 Build:
 
 ```
-cmake .
-make
+./build_linux.sh
 ```
 
 

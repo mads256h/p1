@@ -1,5 +1,5 @@
 #!/bin/sh
 
 
-cmake . -DCMAKE_GENERATOR="MinGW Makefiles"
-mingw32-make.exe
+cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_GENERATOR="MinGW Makefiles"
+cmake --build . --config Release
