@@ -24,10 +24,10 @@ int main(void)
   struct price_data data = extract_data(test_json);
 
   printf("DK1:\n");
-  for (int i = 0; i < 24; i++) { printf("  expected.dk1[%i] = %f\n", i, data.dk1[i]); }
+  for (int i = 0; i < 24; i++) { printf("  %f\n", data.dk1[i]); }
 
   printf("DK2:\n");
-  for (int i = 0; i < 24; i++) { printf("  expected.dk2[%i] = %f\n", i, data.dk2[i]); }
+  for (int i = 0; i < 24; i++) { printf("  %f\n", data.dk2[i]); }
 
   /*Insert code here*/
   /* Rebuild */
