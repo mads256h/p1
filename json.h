@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUFFER_SIZE 512
+#define BUFFER_SIZE ((size_t)512)
 
 struct find_jso_key_userarg
 {

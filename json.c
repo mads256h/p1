@@ -1,23 +1,30 @@
+#include <assert.h>
 #include <string.h>
 
 #include "json.h"
 
 char *read_json(const char *filename)
 {
-  int c, i = 0, cur_size = BUFFER_SIZE;
+  int c;
+  size_t i = 0, cur_size = BUFFER_SIZE;
   char *buffer = malloc(BUFFER_SIZE);
+  assert(buffer);
 
-  FILE *file = fopen(filename, "r");
+  FILE *file = fopen(filename, "rb");
+  assert(file);
+
   while ((c = getc(file)) != EOF) {
     if ((i + 1) > cur_size) {
       buffer = realloc(buffer, cur_size += BUFFER_SIZE);
+      assert(buffer);
     }
-    buffer[i] = c;
+    buffer[i] = (char)c;
     i++;
   }
   buffer[i] = 0;
   fclose(file);
-  printf("Current size: %d, i = %d\n", cur_size, i);
+
+  assert(i <= cur_size);
   return buffer;
 }
 
@@ -28,12 +35,12 @@ struct price_data extract_data(json_object *jso)
 
   json_object *rows_jso = find_jso_key(jso, "Rows");
 
-  for (int i = 0; i < 24; i++) {
+  for (size_t i = 0; i < 24; i++) {
 
-    json_object *first_jso = get_from_index(rows_jso, (size_t)i);
+    json_object *first_jso = get_from_index(rows_jso, i);
     json_object *columns_jso = find_jso_key(first_jso, "Columns");
 
-    for (int j = 0; j < 2; j++) {
+    for (size_t j = 0; j < 2; j++) {
       json_object *column_jso = get_from_index(columns_jso, j);
       json_object *column_value_jso = json_object_get_key(column_jso, "Value");
 
@@ -110,6 +117,13 @@ int find_jso_key_visitor(json_object *jso,
 {
   struct find_jso_key_userarg *find_jso_struct = userarg;
 
+  /* Silence unused variable warnings */
+  (void)flags;
+  (void)parent_jso;
+
+  assert(jso);
+  assert(userarg);
+
 
   if (jso_key && strcmp(jso_key, find_jso_struct->key) == 0) {
 
@@ -128,6 +142,9 @@ json_object *find_jso_key(json_object *jso, const char *key)
   find_jso_struct.value = 0;
   find_jso_struct.index = SIZE_MAX;
 
+  assert(jso);
+  assert(key);
+
   json_c_visit(jso, 0, find_jso_key_visitor, &find_jso_struct);
 
   return find_jso_struct.value;
@@ -136,6 +153,9 @@ json_object *find_jso_key(json_object *jso, const char *key)
 
 json_object *json_object_get_key(json_object *jso, const char *key)
 {
+  assert(jso);
+  assert(key);
+
   json_object_object_foreach(jso, jso_key, jso_val)
   {
     if (strcmp(key, jso_key) == 0) { return jso_val; }
@@ -147,12 +167,20 @@ json_object *json_object_get_key(json_object *jso, const char *key)
 
 json_object *get_from_index(json_object *jso, size_t index)
 {
+  assert(jso);
+
+  assert(json_object_get_type(jso) == json_type_array);
+
   return json_object_array_get_idx(jso, index);
 }
 
 double extract_price(const char *string)
 {
+  assert(string);
+
   char *dup = strdup(string);
+
+  assert(dup);
 
   size_t str_len = strlen(dup);
 
