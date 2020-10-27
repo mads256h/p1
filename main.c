@@ -30,6 +30,7 @@ int main(void)
   for (int i = 0; i < 24; i++) { printf("  %f\n", data.dk2[i]); }
 
   /*Insert code here*/
+  /* Rebuild */
 
   json_object_put(test_json);
   return EXIT_SUCCESS;
