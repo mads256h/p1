@@ -17,12 +17,19 @@ struct find_jso_key_userarg
   size_t index;
 };
 
+struct price_data
+{
+  double dk1[24];
+  double dk2[24];
+};
+
 char *read_json(const char *filename);
 
 void print_json_object(json_object *const json,
   const size_t indent,
   const int is_object);
 
+struct price_data extract_data(json_object *jso);
 
 json_c_visit_userfunc find_jso_key_visitor;
 
@@ -31,6 +38,8 @@ json_object *find_jso_key(json_object *jso, const char *key);
 json_object *json_object_get_key(json_object *jso, const char *key);
 
 json_object *get_from_index(json_object *jso, size_t index);
+
+double extract_price(const char *string);
 
 int main(void)
 {
@@ -43,30 +52,14 @@ int main(void)
     return EXIT_FAILURE;
   }
 
-  json_object *rows_jso = find_jso_key(test_json, "Rows");
-
-  for (int i = 0; i < 24; i++) {
-
-    json_object *first_jso = get_from_index(rows_jso, (size_t)i);
-
-    json_object *name_jso = json_object_get_key(first_jso, "Name");
-
-    printf("%s\n", json_object_get_string(name_jso));
+  struct price_data data = extract_data(test_json);
 
 
-    json_object *columns_jso = find_jso_key(first_jso, "Columns");
-    for (int j = 0; j < 2; j++) {
-      json_object *column_jso = get_from_index(columns_jso, j);
-      json_object *column_name_jso = json_object_get_key(column_jso, "Name");
-      json_object *column_value_jso = json_object_get_key(column_jso, "Value");
+  printf("DK1:\n");
+  for (int i = 0; i < 24; i++) { printf("  %f\n", data.dk1[i]); }
 
-      printf("  %s: %s\n",
-        json_object_get_string(column_name_jso),
-        json_object_get_string(column_value_jso));
-    }
-
-    // print_json_object(first_jso, (size_t)0, 0);
-  }
+  printf("DK2:\n");
+  for (int i = 0; i < 24; i++) { printf("  %f\n", data.dk2[i]); }
 
   json_object_put(test_json);
   return EXIT_SUCCESS;
@@ -89,6 +82,33 @@ char *read_json(const char *filename)
   fclose(file);
   printf("Current size: %d, i = %d\n", cur_size, i);
   return buffer;
+}
+
+
+struct price_data extract_data(json_object *jso)
+{
+  struct price_data ret;
+
+  json_object *rows_jso = find_jso_key(jso, "Rows");
+
+  for (int i = 0; i < 24; i++) {
+
+    json_object *first_jso = get_from_index(rows_jso, (size_t)i);
+    json_object *columns_jso = find_jso_key(first_jso, "Columns");
+
+    for (int j = 0; j < 2; j++) {
+      json_object *column_jso = get_from_index(columns_jso, j);
+      json_object *column_value_jso = json_object_get_key(column_jso, "Value");
+
+      if (j == 0) {
+        ret.dk1[i] = extract_price(json_object_get_string(column_value_jso));
+      } else {
+        ret.dk2[i] = extract_price(json_object_get_string(column_value_jso));
+      }
+    }
+  }
+
+  return ret;
 }
 
 void print_json_object(json_object *const json,
@@ -191,4 +211,21 @@ json_object *json_object_get_key(json_object *jso, const char *key)
 json_object *get_from_index(json_object *jso, size_t index)
 {
   return json_object_array_get_idx(jso, index);
+}
+
+double extract_price(const char *string)
+{
+  char *dup = strdup(string);
+
+  size_t str_len = strlen(dup);
+
+  for (size_t i = 0; i < str_len; i++) {
+    if (dup[i] == ',') { dup[i] = '.'; }
+  }
+
+  double ret = strtod(dup, 0);
+
+  free(dup);
+
+  return ret;
 }
