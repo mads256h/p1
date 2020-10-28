@@ -24,6 +24,7 @@ int main(void)
     return EXIT_FAILURE;
   }
 
+
   /*Extracs pricedata from json*/
   struct price_data data = extract_price_data(jso);
 

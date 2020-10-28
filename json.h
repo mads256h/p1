@@ -30,17 +30,16 @@ void print_json_object(json_object *const json,
   const size_t indent,
   const int is_object);
 
+char *get_part(const char *string, int* found_dot);
+
+json_object *get_jso_js_notation(json_object *jso, const char *string);
+
+
 /*Extract the pricedata from the json object,
   returns a struct with two arrays(dk1 & dk2)*/
 struct price_data extract_price_data(json_object *jso);
 
-json_c_visit_userfunc find_jso_key_visitor;
-
-json_object *find_jso_key(json_object *jso, const char *key);
-
-json_object *json_object_get_key(json_object *jso, const char *key);
-
 json_object *get_from_index(json_object *jso, size_t index);
 
 /*Converts string to double, changes , to .*/
-double extract_price(const char *string);
+double string_to_double(const char *string);
