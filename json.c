@@ -3,7 +3,7 @@
 
 #include "json.h"
 
-char *read_json(const char *filename)
+char *read_file(const char *filename)
 {
   int c;
   size_t i = 0, cur_size = BUFFER_SIZE;
@@ -29,7 +29,7 @@ char *read_json(const char *filename)
 }
 
 
-struct price_data extract_data(json_object *jso)
+struct price_data extract_price_data(json_object *jso)
 {
   struct price_data ret;
 
@@ -170,6 +170,7 @@ json_object *get_from_index(json_object *jso, size_t index)
   assert(jso);
 
   assert(json_object_get_type(jso) == json_type_array);
+  assert(index < json_object_array_length(jso));
 
   return json_object_array_get_idx(jso, index);
 }
