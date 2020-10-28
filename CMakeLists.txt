@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.10)
 project(p1 VERSION 1.0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(CTest)
+
+add_subdirectory(tests)
+
 add_library(project_warnings INTERFACE)
 
 include(cmake/CompilerWarnings.cmake)
