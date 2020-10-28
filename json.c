@@ -35,10 +35,10 @@ struct price_data extract_price_data(json_object *jso)
   struct price_data ret;
 
   for (size_t i = 0; i < 24; i++) {
-      /* equivalent to data.Rows[i].Columns[0].Value */
+    /* equivalent to data.Rows[i].Columns[0].Value */
     json_object *v1 =
       get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 0, "Value");
-      /* equivalent to data.Rows[i].Columns[1].Value */
+    /* equivalent to data.Rows[i].Columns[1].Value */
     json_object *v2 =
       get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 1, "Value");
     ret.dk1[i] = string_to_double(json_object_get_string(v1));
