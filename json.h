@@ -30,7 +30,7 @@ void print_json_object(json_object *const json,
   const size_t indent,
   const int is_object);
 
-char *get_part(const char *string, int* found_dot);
+char *get_part(const char *string, int *found_dot);
 
 json_object *get_jso_js_notation(json_object *jso, const char *string);
 
