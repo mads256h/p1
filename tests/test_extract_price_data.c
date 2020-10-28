@@ -70,24 +70,23 @@ struct price_data get_expected(void)
 
 int main(void)
 {
-  char *json_content = read_json("test_extract_data.json");
+  char *json_content = read_file("test_extract_price_data.json");
 
   assert(json_content);
 
   json_object *jso = json_tokener_parse(json_content);
 
+  free(json_content);
+
   assert(jso);
 
-  struct price_data actual = extract_data(jso);
+  struct price_data actual = extract_price_data(jso);
 
   struct price_data expected = get_expected();
 
   assert(memcmp(&expected, &actual, sizeof(struct price_data)) == 0);
 
   json_object_put(jso);
-
-  free(json_content);
-
 
   return EXIT_SUCCESS;
 }

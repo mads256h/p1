@@ -8,12 +8,6 @@
 
 #define BUFFER_SIZE ((size_t)512)
 
-struct find_jso_key_userarg
-{
-  const char *key;
-  json_object *value;
-  size_t index;
-};
 
 struct price_data
 {
@@ -21,20 +15,25 @@ struct price_data
   double dk2[24];
 };
 
-char *read_json(const char *filename);
+/*Reads the file with the filename, returns a string with filecontents
+  Remember to call free(free the memory)*/
+char *read_file(const char *filename);
 
 void print_json_object(json_object *const json,
   const size_t indent,
   const int is_object);
 
-struct price_data extract_data(json_object *jso);
+char *get_part(const char *string, int *found_dot);
 
-json_c_visit_userfunc find_jso_key_visitor;
+json_object *get_jso_js_notation(json_object *jso, const char *string);
 
-json_object *find_jso_key(json_object *jso, const char *key);
+json_object *get_jso_from_format(json_object *jso, const char *format, ...);
 
-json_object *json_object_get_key(json_object *jso, const char *key);
+/*Extract the pricedata from the json object,
+  returns a struct with two arrays(dk1 & dk2)*/
+struct price_data extract_price_data(json_object *jso);
 
-json_object *get_from_index(json_object *jso, size_t index);
+json_object *get_jso_from_array_index(json_object *jso, size_t index);
 
-double extract_price(const char *string);
+/*Converts string to double, changes , to .*/
+double string_to_double(const char *string);
