@@ -34,12 +34,13 @@ char *get_part(const char *string, int *found_dot);
 
 json_object *get_jso_js_notation(json_object *jso, const char *string);
 
+json_object *get_jso_from_format(json_object *jso, const char *format, ...);
 
 /*Extract the pricedata from the json object,
   returns a struct with two arrays(dk1 & dk2)*/
 struct price_data extract_price_data(json_object *jso);
 
-json_object *get_from_index(json_object *jso, size_t index);
+json_object *get_jso_from_array_index(json_object *jso, size_t index);
 
 /*Converts string to double, changes , to .*/
 double string_to_double(const char *string);

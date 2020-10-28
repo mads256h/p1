@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdarg.h>
 #include <string.h>
 
 #include "json.h"
@@ -33,23 +34,13 @@ struct price_data extract_price_data(json_object *jso)
 {
   struct price_data ret;
 
-  json_object *rows_jso = get_jso_js_notation(jso, "data.Rows");
-
   for (size_t i = 0; i < 24; i++) {
-
-    json_object *first_jso = get_from_index(rows_jso, i);
-    json_object *columns_jso = get_jso_js_notation(first_jso, "Columns");
-
-    for (size_t j = 0; j < 2; j++) {
-      json_object *column_jso = get_from_index(columns_jso, j);
-      json_object *column_value_jso = get_jso_js_notation(column_jso, "Value");
-
-      if (j == 0) {
-        ret.dk1[i] = string_to_double(json_object_get_string(column_value_jso));
-      } else {
-        ret.dk2[i] = string_to_double(json_object_get_string(column_value_jso));
-      }
-    }
+    json_object *v1 =
+      get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 0, "Value");
+    json_object *v2 =
+      get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 1, "Value");
+    ret.dk1[i] = string_to_double(json_object_get_string(v1));
+    ret.dk2[i] = string_to_double(json_object_get_string(v2));
   }
 
   return ret;
@@ -163,8 +154,38 @@ json_object *get_jso_js_notation(json_object *jso, const char *string)
   return cur_jso;
 }
 
+json_object *get_jso_from_format(json_object *jso, const char *format, ...)
+{
+  va_list ap;
+  size_t str_len = strlen(format);
+  json_object *cur_jso = jso;
 
-json_object *get_from_index(json_object *jso, size_t index)
+  va_start(ap, format);
+
+  for (size_t i = 0; i < str_len; i++) {
+    if (format[i] == 'i') {
+      size_t index = va_arg(ap, size_t);
+
+      cur_jso = get_jso_from_array_index(cur_jso, index);
+    } else if (format[i] == 'k') {
+      const char *key = va_arg(ap, const char *);
+
+      cur_jso = get_jso_js_notation(cur_jso, key);
+    } else {
+      assert(0);
+    }
+
+    assert(cur_jso);
+  }
+
+  va_end(ap);
+
+
+  return cur_jso;
+}
+
+
+json_object *get_jso_from_array_index(json_object *jso, size_t index)
 {
   assert(jso);
 
