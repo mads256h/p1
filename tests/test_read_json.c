@@ -26,7 +26,8 @@ int main(void)
 
   assert(file_content);
 
-  assert(strcmp(file_content, str) == 0 || strcmp(file_content, windows_str) == 0);
+  assert(
+    strcmp(file_content, str) == 0 || strcmp(file_content, windows_str) == 0);
 
   return EXIT_SUCCESS;
 }
