@@ -15,13 +15,18 @@ const char *str =
   "  \"json\" : \"test\"\n"
   "}\n";
 
+const char *windows_str =
+  "{\r\n"
+  "  \"json\" : \"test\"\r\n"
+  "}\r\n";
+
 int main(void)
 {
   char *file_content = read_json("test_read_json.json");
 
   assert(file_content);
 
-  assert(strcmp(file_content, str) == 0);
+  assert(strcmp(file_content, str) == 0 || strcmp(file_content, windows_str) == 0);
 
   return EXIT_SUCCESS;
 }
