@@ -8,13 +8,6 @@
 
 #define BUFFER_SIZE ((size_t)512)
 
-/*Finds the jso key*/
-struct find_jso_key_userarg
-{
-  const char *key;
-  json_object *value;
-  size_t index;
-};
 
 struct price_data
 {
