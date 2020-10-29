@@ -19,3 +19,5 @@ target_link_libraries(
   PRIVATE project_warnings
           json-c)
 
+set_property(TARGET p1 PROPERTY C_STANDARD 90)
+

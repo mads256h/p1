@@ -205,6 +205,7 @@ void print_json_object(json_object *const json,
 {
   size_t i;
   enum json_type type;
+  json_object_iter iter;
 
   type = json_object_get_type(json);
 
@@ -228,11 +229,11 @@ void print_json_object(json_object *const json,
     break;
   case json_type_object:
     printf("(json_type_object)\n");
-    json_object_object_foreach(json, key, val)
+    json_object_object_foreachC(json, iter)
     {
       for (i = 0; i < indent + 1; i++) { printf("  "); }
-      printf("%s: ", key);
-      print_json_object(val, indent + 1, 1);
+      printf("%s: ", iter.key);
+      print_json_object(iter.val, indent + 1, 1);
     }
     return;
   case json_type_array:
