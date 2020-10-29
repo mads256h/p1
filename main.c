@@ -13,10 +13,14 @@
 
 int main(void)
 {
+  char *file_content;
+  json_object *jso;
+  struct price_data prices;
+  size_t i;
 
-  char *file_content = read_file("real.json");
+  file_content = read_file("real.json");
   /*Parses json, changes the string into an object*/
-  json_object *jso = json_tokener_parse(file_content);
+  jso = json_tokener_parse(file_content);
   free(file_content);
 
   /*If parsing failed*/
@@ -27,18 +31,19 @@ int main(void)
 
 
   /*Extracs pricedata from json*/
-  struct price_data data = extract_price_data(jso);
+  prices = extract_price_data(jso);
+
+  /*Frees up memory occupied by the jso object*/
+  json_object_put(jso);
 
   printf("DK1:\n");
-  for (int i = 0; i < 24; i++) { printf("  %f\n", data.dk1[i]); }
+  for (i = 0; i < 24; i++) { printf("  %f\n", prices.dk1[i]); }
 
   printf("DK2:\n");
-  for (int i = 0; i < 24; i++) { printf("  %f\n", data.dk2[i]); }
+  for (i = 0; i < 24; i++) { printf("  %f\n", prices.dk2[i]); }
 
   /*Insert code here*/
   /* Rebuild */
 
-  /*Frees up memory occupied by the jso object*/
-  json_object_put(jso);
   return EXIT_SUCCESS;
 }

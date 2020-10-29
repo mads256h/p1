@@ -9,10 +9,13 @@ char *read_file(const char *filename)
 {
   int c;
   size_t i = 0, cur_size = BUFFER_SIZE;
-  char *buffer = malloc(BUFFER_SIZE);
+  char *buffer;
+  FILE *file;
+
+  buffer = malloc(BUFFER_SIZE);
   assert(buffer);
 
-  FILE *file = fopen(filename, "rb");
+  file = fopen(filename, "rb");
   assert(file);
 
   while ((c = getc(file)) != EOF) {
@@ -33,40 +36,46 @@ char *read_file(const char *filename)
 
 struct price_data extract_price_data(json_object *jso)
 {
-  struct price_data ret;
+  size_t i;
+  json_object *value;
+  struct price_data prices;
 
-  for (size_t i = 0; i < 24; i++) {
+  for (i = 0; i < 24; i++) {
     /* equivalent to data.Rows[i].Columns[0].Value */
-    json_object *v1 =
+    value =
       get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 0, "Value");
+    prices.dk1[i] = string_to_double(json_object_get_string(value));
+
     /* equivalent to data.Rows[i].Columns[1].Value */
-    json_object *v2 =
+    value =
       get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 1, "Value");
-    ret.dk1[i] = string_to_double(json_object_get_string(v1));
-    ret.dk2[i] = string_to_double(json_object_get_string(v2));
+    prices.dk2[i] = string_to_double(json_object_get_string(value));
   }
 
-  return ret;
+  return prices;
 }
 
 
 json_object *get_jso_from_format(json_object *jso, const char *format, ...)
 {
   va_list ap;
-  size_t str_len = strlen(format);
-  json_object *cur_jso = jso;
+  size_t i, str_len;
+  json_object *cur_jso;
+
+  assert(jso);
+  assert(format);
+
+  cur_jso = jso;
+
+  str_len = strlen(format);
 
   va_start(ap, format);
 
-  for (size_t i = 0; i < str_len; i++) {
+  for (i = 0; i < str_len; i++) {
     if (format[i] == 'i') {
-      size_t index = va_arg(ap, size_t);
-
-      cur_jso = get_jso_from_array_index(cur_jso, index);
+      cur_jso = get_jso_from_array_index(cur_jso, va_arg(ap, size_t));
     } else if (format[i] == 'k') {
-      const char *key = va_arg(ap, const char *);
-
-      cur_jso = get_jso_from_keys(cur_jso, key);
+      cur_jso = get_jso_from_keys(cur_jso, va_arg(ap, const char *));
     } else {
       assert(0);
     }
@@ -83,23 +92,26 @@ json_object *get_jso_from_format(json_object *jso, const char *format, ...)
 
 double string_to_double(const char *string)
 {
+  char *dup;
+  size_t str_len, i;
+  double value;
+
   assert(string);
 
-  char *dup = strdup(string);
-
+  dup = strdup(string);
   assert(dup);
 
-  size_t str_len = strlen(dup);
+  str_len = strlen(dup);
 
-  for (size_t i = 0; i < str_len; i++) {
+  for (i = 0; i < str_len; i++) {
     if (dup[i] == ',') { dup[i] = '.'; }
   }
 
-  double ret = strtod(dup, 0);
+  value = strtod(dup, 0);
 
   free(dup);
 
-  return ret;
+  return value;
 }
 
 
@@ -116,14 +128,18 @@ json_object *get_jso_from_array_index(json_object *jso, size_t index)
 
 json_object *get_jso_from_keys(json_object *jso, const char *keys)
 {
+  json_object *cur_jso;
+  struct split_string_data split;
+  size_t i;
+
   assert(jso);
   assert(keys);
 
-  struct split_string_data split = split_string(keys, '.');
+  cur_jso = jso;
+  split = split_string(keys, '.');
 
-  json_object *cur_jso = jso;
 
-  for (size_t i = 0; i < split.size; i++) {
+  for (i = 0; i < split.size; i++) {
     cur_jso = json_object_object_get(cur_jso, split.strings[i]);
 
     assert(cur_jso);
