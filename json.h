@@ -2,7 +2,7 @@
 #include <json-c/json_object.h>
 #include <json-c/json_tokener.h>
 #include <json-c/json_visit.h>
-#include <stdint.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 

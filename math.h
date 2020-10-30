@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <stddef.h>
 
 
 /*Finds the cheapest hours between start and end required to charge the electric

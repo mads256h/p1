@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <malloc.h>
 #include <math.h>
-#include <stdint.h>
+#include <stddef.h>
 
 size_t *find_cheapest_hours(size_t start,
   size_t end,
