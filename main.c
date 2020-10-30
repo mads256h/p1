@@ -19,6 +19,9 @@ int main(void)
   struct price_data prices;
   size_t i, size;
   size_t *cheapest;
+  double *selected_price;
+  double prices_average;
+  double cheapest_average;
 
   file_content = read_file("real.json");
   /*Parses json, changes the string into an object*/
@@ -47,10 +50,23 @@ int main(void)
   /*Insert code here*/
   /* Rebuild */
   printf("\n Cheapest: \n");
-  cheapest = find_cheapest_hours((size_t)5, (size_t)20, 0.0, prices.dk2, &size);
+  cheapest = find_cheapest_hours((size_t)0, (size_t)24, 0.0, prices.dk1, &size);
   printf("Size: %d\n", (int)size);
   for (i = 0; i < size; i++) { printf("%f\n", prices.dk1[cheapest[i]]); }
 
+  selected_price = malloc(size * sizeof(double));
+  for (i = 0; i < size; i++) { selected_price[i] = prices.dk1[cheapest[i]]; }
+
   free(cheapest);
+
+  prices_average = average(prices.dk1, (sizeof(prices.dk1) / sizeof(double)));
+  cheapest_average = average(selected_price, size);
+
+  free(selected_price);
+
+
+  printf("Saved: %f", (cheapest_average * size) / (prices_average * size));
+
+
   return EXIT_SUCCESS;
 }
