@@ -1,6 +1,5 @@
 #include "json.h"
 #include <assert.h>
-#include <malloc.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
