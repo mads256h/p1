@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "json.h"
+#include "math.h"
 
 
 int main(void)
@@ -16,7 +17,8 @@ int main(void)
   char *file_content;
   json_object *jso;
   struct price_data prices;
-  size_t i;
+  size_t i, size;
+  size_t *cheapest;
 
   file_content = read_file("real.json");
   /*Parses json, changes the string into an object*/
@@ -44,6 +46,11 @@ int main(void)
 
   /*Insert code here*/
   /* Rebuild */
+  printf("\n Cheapest: \n");
+  cheapest = find_cheapest_hours((size_t)5, (size_t)20, 0.0, prices.dk2, &size);
+  printf("Size: %d\n", (int)size);
+  for (i = 0; i < size; i++) { printf("%f\n", prices.dk1[cheapest[i]]); }
 
+  free(cheapest);
   return EXIT_SUCCESS;
 }
