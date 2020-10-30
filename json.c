@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <malloc.h>
 #include <stdarg.h>
 #include <string.h>
 
