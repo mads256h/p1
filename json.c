@@ -1,9 +1,9 @@
+#include "json.h"
 #include <assert.h>
 #include <malloc.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <string.h>
-
-#include "json.h"
 
 
 char *read_file(const char *filename)

@@ -3,6 +3,8 @@
 #include <malloc.h>
 #include <math.h>
 #include <stddef.h>
+#include <stdint.h>
+
 
 size_t *find_cheapest_hours(size_t start,
   size_t end,
