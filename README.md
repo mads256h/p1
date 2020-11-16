@@ -8,7 +8,7 @@ This repository is built with cmake.
 It has these dependencies:
 
 ```
-json-c
+json-c curl
 ```
 
 
@@ -58,7 +58,7 @@ cd into repository and run:
 Install dependencies:
 
 ```
-gcc make cmake json-c
+gcc make cmake json-c curl
 ```
 
 Build:
@@ -71,6 +71,6 @@ Build:
 ### Dependencies for Arch Linux
 
 ```
-pacman -Suy gcc make cmake json-c
+pacman -Suy gcc make cmake json-c curl
 ```
 
