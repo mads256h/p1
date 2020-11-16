@@ -80,7 +80,7 @@ int main(void)
 
   assert(jso);
 
-  struct price_data actual = extract_price_data(jso);
+  struct price_data actual = extract_price_data(jso, jso);
 
   struct price_data expected = get_expected();
 

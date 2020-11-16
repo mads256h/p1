@@ -17,7 +17,8 @@ add_executable(p1 main.c json.c math.c)
 target_link_libraries(
   p1
   PRIVATE project_warnings
-          json-c)
+          json-c
+          m)
 
 set_property(TARGET p1 PROPERTY C_STANDARD 90)
 

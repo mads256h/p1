@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "util.h"
+
 
 #define BUFFER_SIZE ((size_t)512)
 
@@ -14,8 +16,8 @@
 /*Holds the price data*/
 struct price_data
 {
-  double dk1[24];
-  double dk2[24];
+  double dk1[HOURS_USED];
+  double dk2[HOURS_USED];
 };
 
 /*Holds the strings split data*/
@@ -33,7 +35,8 @@ char *read_file(const char *filename);
 
 /*Extract the pricedata from the json object,
   returns a struct with two arrays(dk1 & dk2)*/
-struct price_data extract_price_data(json_object *jso);
+struct price_data extract_price_data(json_object *jso_today,
+  json_object *jso_tomorrow);
 
 
 /*Gets a child of jso specified by the format string and varargs*/
