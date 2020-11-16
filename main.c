@@ -3,6 +3,7 @@
 #include <json-c/json_object_iterator.h>
 #include <json-c/json_tokener.h>
 #include <json-c/json_visit.h>
+#include <curl/curl.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,7 @@
 #include "json.h"
 #include "math.h"
 #include "util.h"
+#include "www.h"
 
 
 int main(void)
@@ -25,14 +27,16 @@ int main(void)
   double prices_average;
   double cheapest_average;
 
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+
   /* Today */
-  file_content = read_file("today.json");
+  file_content = download_url("https://www.nordpoolgroup.com/api/marketdata/page/41?currency=,EUR,EUR,EUR&endDate=16-11-2020");
   /*Parses json, changes the string into an object*/
   jso_today = json_tokener_parse(file_content);
   free(file_content);
 
   /* Tomorrow */
-  file_content = read_file("tomorrow.json");
+  file_content = download_url("https://www.nordpoolgroup.com/api/marketdata/page/41?currency=,EUR,EUR,EUR&endDate=17-11-2020");
   jso_tomorrow = json_tokener_parse(file_content);
   free(file_content);
 
@@ -88,6 +92,8 @@ int main(void)
 
 
   printf("Saved: %f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
+
+  curl_global_cleanup();
 
   return EXIT_SUCCESS;
 }
