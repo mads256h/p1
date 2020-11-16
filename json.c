@@ -34,21 +34,43 @@ char *read_file(const char *filename)
 }
 
 
-struct price_data extract_price_data(json_object *jso)
+struct price_data extract_price_data(json_object *jso_today,
+  json_object *jso_tomorrow)
 {
   size_t i;
   json_object *value;
   struct price_data prices;
 
-  for (i = 0; i < 24; i++) {
+  for (i = 0; i < HOURS_USED / 2; i++) {
     /* equivalent to data.Rows[i].Columns[0].Value */
-    value =
-      get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 0, "Value");
+    value = get_jso_from_format(
+      jso_today, "kikik", "data.Rows", i, "Columns", 0, "Value");
     prices.dk1[i] = string_to_double(json_object_get_string(value));
 
     /* equivalent to data.Rows[i].Columns[1].Value */
-    value =
-      get_jso_from_format(jso, "kikik", "data.Rows", i, "Columns", 1, "Value");
+    value = get_jso_from_format(
+      jso_today, "kikik", "data.Rows", i, "Columns", 1, "Value");
+    prices.dk2[i] = string_to_double(json_object_get_string(value));
+  }
+
+  for (i = HOURS_USED / 2; i < HOURS_USED; i++) {
+    value = get_jso_from_format(jso_tomorrow,
+      "kikik",
+      "data.Rows",
+      i - HOURS_USED / 2,
+      "Columns",
+      0,
+      "Value");
+    prices.dk1[i] = string_to_double(json_object_get_string(value));
+
+    /* equivalent to data.Rows[i].Columns[1].Value */
+    value = get_jso_from_format(jso_tomorrow,
+      "kikik",
+      "data.Rows",
+      i - HOURS_USED / 2,
+      "Columns",
+      1,
+      "Value");
     prices.dk2[i] = string_to_double(json_object_get_string(value));
   }
 
