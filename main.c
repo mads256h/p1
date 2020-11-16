@@ -1,9 +1,9 @@
+#include <curl/curl.h>
 #include <json-c/json.h>
 #include <json-c/json_object.h>
 #include <json-c/json_object_iterator.h>
 #include <json-c/json_tokener.h>
 #include <json-c/json_visit.h>
-#include <curl/curl.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,13 +30,17 @@ int main(void)
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   /* Today */
-  file_content = download_url("https://www.nordpoolgroup.com/api/marketdata/page/41?currency=,EUR,EUR,EUR&endDate=16-11-2020");
+  file_content = download_url(
+    "https://www.nordpoolgroup.com/api/marketdata/page/"
+    "41?currency=,EUR,EUR,EUR&endDate=16-11-2020");
   /*Parses json, changes the string into an object*/
   jso_today = json_tokener_parse(file_content);
   free(file_content);
 
   /* Tomorrow */
-  file_content = download_url("https://www.nordpoolgroup.com/api/marketdata/page/41?currency=,EUR,EUR,EUR&endDate=17-11-2020");
+  file_content = download_url(
+    "https://www.nordpoolgroup.com/api/marketdata/page/"
+    "41?currency=,EUR,EUR,EUR&endDate=17-11-2020");
   jso_tomorrow = json_tokener_parse(file_content);
   free(file_content);
 

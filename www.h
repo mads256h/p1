@@ -8,4 +8,3 @@ struct memory_struct
 };
 
 char *download_url(const char *const url);
-

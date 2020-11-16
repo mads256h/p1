@@ -20,12 +20,11 @@ char *download_url(const char *const url)
   mem.size = 0;
 
 
-
   curl = curl_easy_init();
-  
+
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_memory_callback);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&mem);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&mem);
 
   curl_easy_perform(curl);
 
@@ -42,16 +41,16 @@ static size_t
   struct memory_struct *mem = (struct memory_struct *)userp;
 
   char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-  if(ptr == NULL) {
-    /* out of memory! */ 
+  if (ptr == NULL) {
+    /* out of memory! */
     printf("not enough memory (realloc returned NULL)\n");
     return 0;
   }
- 
+
   mem->memory = ptr;
   memcpy(&(mem->memory[mem->size]), contents, realsize);
   mem->size += realsize;
   mem->memory[mem->size] = 0;
- 
+
   return realsize;
 }
