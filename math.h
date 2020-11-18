@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <time.h>
 
+#include "util.h"
 
 /*Finds the cheapest hours between start and end required to charge the electric
  * car*/
@@ -15,3 +17,7 @@ double charge_to_hours(double charge);
 
 /*Finds the average from numberarray*/
 double average(double numbers[], size_t size);
+
+void print_prices(const struct tm today,
+  const struct tm tomorrow,
+  const double prices[HOURS_USED]);

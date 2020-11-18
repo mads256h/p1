@@ -1,22 +1,41 @@
+#include <assert.h>
 #include <curl/curl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
+#include "util.h"
 #include "www.h"
 
 
 static size_t
   write_memory_callback(void *contents, size_t size, size_t nmemb, void *userp);
 
+char *format_url(const char *const url, const struct tm date)
+{
+  const size_t url_len = strlen(url);
+  char date_str[DATE_SIZE + 1];
+  char *formatted_url;
+
+  format_date(date_str, date);
+
+  formatted_url = malloc(url_len + strlen(date_str) + 1);
+
+  memcpy(formatted_url, url, url_len + 1);
+
+  strcat(formatted_url, date_str);
+
+
+  return formatted_url;
+}
 
 char *download_url(const char *const url)
 {
   struct memory_struct mem;
   CURL *curl;
 
-  mem.memory = malloc(1);
+  mem.memory = 0;
   mem.size = 0;
 
 
@@ -37,19 +56,17 @@ char *download_url(const char *const url)
 static size_t
   write_memory_callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
-  size_t realsize = size * nmemb;
-  struct memory_struct *mem = (struct memory_struct *)userp;
+  const size_t realsize = size * nmemb;
+  struct memory_struct *const mem = (struct memory_struct *)userp;
 
   char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-  if (ptr == NULL) {
-    /* out of memory! */
-    printf("not enough memory (realloc returned NULL)\n");
-    return 0;
-  }
+  assert(ptr);
 
   mem->memory = ptr;
+
   memcpy(&(mem->memory[mem->size]), contents, realsize);
   mem->size += realsize;
+
   mem->memory[mem->size] = 0;
 
   return realsize;
