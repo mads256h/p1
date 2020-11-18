@@ -3,8 +3,10 @@
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
+#define HOURS_IN_DAY 24
 
 size_t *find_cheapest_hours(size_t start,
   size_t end,
@@ -72,4 +74,31 @@ double average(double numbers[], size_t size)
   /* Summate all numbers */
   for (i = 0; i < size; i++) { sum += numbers[i]; }
   return sum / (double)size;
+}
+
+void print_prices_day(const struct tm date,
+  const size_t start,
+  const double prices[HOURS_USED])
+{
+  size_t i;
+  for (i = start; i < start + HOURS_IN_DAY; i++) {
+    printf("%04d-%02d-%02dT%02d-%02d: %.2fDKK\n",
+      date.tm_year + 1900,
+      date.tm_mon,
+      date.tm_mday,
+      (int)i - start,
+      (int)i + 1 - start,
+      prices[i]);
+  }
+}
+
+void print_prices(const struct tm today,
+  const struct tm tomorrow,
+  const double prices[HOURS_USED])
+{
+  /* Today */
+  print_prices_day(today, 0, prices);
+
+  /* Tomorrow */
+  print_prices_day(tomorrow, HOURS_USED / 2, prices);
 }

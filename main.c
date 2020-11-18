@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "json.h"
 #include "math.h"
@@ -26,21 +27,33 @@ int main(void)
   double *selected_price;
   double prices_average;
   double cheapest_average;
+  const char url_part[] =
+    "https://www.nordpoolgroup.com/api/marketdata/page/"
+    "41?currency=,DKK,DKK,DKK&endDate=";
+  struct tm tdy;
+  struct tm tmw;
+  char *url;
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
+  tdy = *today();
+  tmw = *tomorrow();
+
+
   /* Today */
-  file_content = download_url(
-    "https://www.nordpoolgroup.com/api/marketdata/page/"
-    "41?currency=,EUR,EUR,EUR&endDate=16-11-2020");
+  url = format_url(url_part, tdy);
+  printf("%s\n", url);
+  file_content = download_url(url);
+  free(url);
   /*Parses json, changes the string into an object*/
   jso_today = json_tokener_parse(file_content);
   free(file_content);
 
   /* Tomorrow */
-  file_content = download_url(
-    "https://www.nordpoolgroup.com/api/marketdata/page/"
-    "41?currency=,EUR,EUR,EUR&endDate=17-11-2020");
+  url = format_url(url_part, tmw);
+  printf("%s\n", url);
+  file_content = download_url(url);
+  free(url);
   jso_tomorrow = json_tokener_parse(file_content);
   free(file_content);
 
@@ -60,20 +73,17 @@ int main(void)
   json_object_put(jso_tomorrow);
 
   printf("DK1:\n");
-  for (i = 0; i < HOURS_USED; i++) {
-    printf("%d  %f\n", (int)i, prices.dk1[i]);
-  }
+  print_prices(tdy, tmw, prices.dk1);
 
   printf("DK2:\n");
-  for (i = 0; i < HOURS_USED; i++) {
-    printf("%d  %f\n", (int)i, prices.dk2[i]);
-  }
+  print_prices(tdy, tmw, prices.dk2);
+
 
   /*Insert code here*/
   /* Rebuild */
   printf("\n Cheapest: \n");
   cheapest_indecies =
-    find_cheapest_hours((size_t)0, (size_t)HOURS_USED, 0.0, prices.dk1, &hours);
+    find_cheapest_hours((size_t)0, (size_t)HOURS_USED, 0.5, prices.dk1, &hours);
 
   selected_price = malloc(hours * sizeof(double));
   printf("Size: %d\n", (int)hours);
