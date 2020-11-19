@@ -81,16 +81,14 @@ int main(void)
 
   /*Insert code here*/
   /* Rebuild */
-  printf("\n Cheapest: \n");
+  printf("\nCheapest DK1:\n");
   cheapest_indecies =
     find_cheapest_hours((size_t)0, (size_t)HOURS_USED, 0.5, prices.dk1, &hours);
 
   selected_price = malloc(hours * sizeof(double));
-  printf("Size: %d\n", (int)hours);
+  printf("Charge time: %d hours\n", (int)hours);
 
-  for (i = 0; i < hours; i++) {
-    printf("%f\n", prices.dk1[cheapest_indecies[i]]);
-  }
+  print_cheapest_prices(tdy, tmw, prices.dk1, cheapest_indecies, hours);
 
   for (i = 0; i < hours; i++) {
     selected_price[i] = prices.dk1[cheapest_indecies[i]];
@@ -105,7 +103,7 @@ int main(void)
   free(selected_price);
 
 
-  printf("Saved: %f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
+  printf("Saved: %.2f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
 
   curl_global_cleanup();
 
