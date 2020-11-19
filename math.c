@@ -82,13 +82,9 @@ void print_prices_day(const struct tm date,
 {
   size_t i;
   for (i = start; i < start + HOURS_IN_DAY; i++) {
-    printf("%04d-%02d-%02dT%02d-%02d: %.2fDKK\n",
-      date.tm_year + 1900,
-      date.tm_mon,
-      date.tm_mday,
-      (int)i - start,
-      (int)i + 1 - start,
-      prices[i]);
+    print_date_hours(date, i - start);
+
+    printf(": %.2fDKK\n", prices[i]);
   }
 }
 
@@ -101,4 +97,33 @@ void print_prices(const struct tm today,
 
   /* Tomorrow */
   print_prices_day(tomorrow, HOURS_USED / 2, prices);
+}
+void print_date_hours(const struct tm date, const int hour)
+{
+  printf("%04d-%02d-%02d T %02d-%02d",
+    date.tm_year + 1900,
+    date.tm_mon + 1,
+    date.tm_mday,
+    hour,
+    hour + 1);
+}
+void print_cheapest_prices(const struct tm today,
+  const struct tm tomorrow,
+  const double prices[HOURS_USED],
+  const size_t cheapest_hours[],
+  const size_t cheapest_hours_length)
+{
+  size_t i, hour;
+
+  for (i = 0; i < cheapest_hours_length; i++) {
+    hour = cheapest_hours[i];
+    if (hour < HOURS_USED / 2) {
+      print_date_hours(today, hour);
+    } else {
+      print_date_hours(tomorrow, hour);
+    }
+
+
+    printf(": %.2fDKK\n", prices[cheapest_hours[i]]);
+  }
 }

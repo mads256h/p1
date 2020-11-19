@@ -21,3 +21,12 @@ double average(double numbers[], size_t size);
 void print_prices(const struct tm today,
   const struct tm tomorrow,
   const double prices[HOURS_USED]);
+
+
+void print_cheapest_prices(const struct tm today,
+  const struct tm tomorrow,
+  const double prices[HOURS_USED],
+  const size_t cheapest_hours[],
+  const size_t cheapest_hours_length);
+
+void print_date_hours(const struct tm date, const int hour);
