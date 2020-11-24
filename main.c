@@ -15,6 +15,8 @@
 #include "util.h"
 #include "www.h"
 
+#include "command.h"
+
 
 int main(void)
 {
@@ -34,6 +36,7 @@ int main(void)
   struct tm tmw;
   char *url;
 
+  command_loop();
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   tdy = *today();

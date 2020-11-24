@@ -13,7 +13,7 @@ add_library(project_warnings INTERFACE)
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(project_warnings)
 
-add_executable(p1 main.c json.c math.c www.c util.c)
+add_executable(p1 main.c json.c math.c www.c util.c command.c)
 target_link_libraries(
   p1
   PRIVATE project_warnings
