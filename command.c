@@ -47,19 +47,22 @@ int command_download(size_t argc,
   struct command_data *data)
 {
   char *url;
-  char filename[DATE_FILE_SIZE+1];
+  char filename[DATE_FILE_SIZE+1] = {0};
   struct tm date = date_today();
   if (argc == 2) { date = string_to_date(argv[1]); }
   url = format_url(url_part, date);
   format_date_file(filename, date);
+  printf("%d\n", (int)strlen(filename));
+  fflush(stdout);
   download_url(url, filename);
+  free(url);
 }
 
 int command_cheapest(size_t argc,
   const char *const argv[],
   struct command_data *data)
 {
-  char filename[DATE_FILE_SIZE + 1];
+  char filename[DATE_FILE_SIZE + 1] = {0};
   char *file_content;
   json_object *jso;
   struct price_data prices;
@@ -73,15 +76,19 @@ int command_cheapest(size_t argc,
 
   if (argc == 4) { date = string_to_date(argv[3]); }
   format_date_file(filename, date);
+  printf("%d\n", (int)strlen(filename));
+  fflush(stdout);
+
   file_content = read_file(filename);
   jso = json_tokener_parse(file_content);
   free(file_content);
   prices = extract_price_data(jso, jso);
+  json_object_put(jso);
   cheapest = find_cheapest_hours(start, end, 0, prices.dk1, &length);
 
 
   print_cheapest_prices(date, date, prices.dk1, cheapest, length);
-
+  free(cheapest);
   return EXIT_SUCCESS;
 }
 

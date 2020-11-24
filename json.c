@@ -2,34 +2,38 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 
 char *read_file(const char *filename)
 {
   int c;
-  size_t i = 0, cur_size = BUFFER_SIZE;
-  char *buffer;
+
+  size_t i = 0, cur_size = 0;
+  char *buffer = 0;
   FILE *file;
 
-  buffer = malloc(BUFFER_SIZE);
-  assert(buffer);
-
-  file = fopen(filename, "rb");
+  file = fopen(filename, "r");
   assert(file);
-
-  while ((c = getc(file)) != EOF) {
-    if ((i + 1) > cur_size) {
-      buffer = realloc(buffer, cur_size += BUFFER_SIZE);
+  fseek(file, 0, SEEK_END);
+  printf("%d\n", (int)ftell(file));
+  fflush(stdout);
+  rewind(file);
+  while ((c = fgetc(file)) != EOF) {
+    if ((i + 2) > cur_size) {
+      cur_size += BUFFER_SIZE;
+      buffer = realloc(buffer, cur_size);
       assert(buffer);
     }
     buffer[i] = (char)c;
     i++;
   }
+  assert(buffer);
   buffer[i] = 0;
   fclose(file);
 
-  assert(i <= cur_size);
+  assert(i < cur_size);
   return buffer;
 }
 
@@ -83,7 +87,8 @@ json_object *get_jso_from_format(json_object *jso, const char *format, ...)
   va_list ap;
   size_t i, str_len;
   json_object *cur_jso;
-
+  size_t index_test;
+  const char *string_test;
   assert(jso);
   assert(format);
 
@@ -95,13 +100,19 @@ json_object *get_jso_from_format(json_object *jso, const char *format, ...)
 
   for (i = 0; i < str_len; i++) {
     if (format[i] == 'i') {
-      cur_jso = get_jso_from_array_index(cur_jso, va_arg(ap, size_t));
+      index_test = va_arg(ap, size_t);
+      printf("%d\n", index_test);
+      cur_jso = get_jso_from_array_index(cur_jso, index_test);
+      print_json_object(cur_jso, 0, 0);
     } else if (format[i] == 'k') {
-      cur_jso = get_jso_from_keys(cur_jso, va_arg(ap, const char *));
+      string_test = va_arg(ap, const char *);
+      printf("%s\n", string_test);
+      cur_jso = get_jso_from_keys(cur_jso, string_test);
     } else {
       assert(0);
     }
 
+    printf("%p\n", cur_jso);
     assert(cur_jso);
   }
 
@@ -148,8 +159,8 @@ json_object *get_jso_from_array_index(json_object *jso, size_t index)
   printf("index: %d\n", (int)index);
   printf("length: %d\n", (int)length);
   fflush(stdout);
-  
-  assert(index < length);
+
+  assert((int)index < (int)length);
 
   return json_object_array_get_idx(jso, index);
 }
