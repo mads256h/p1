@@ -88,15 +88,15 @@ void print_prices_day(const struct tm date,
   }
 }
 
-void print_prices(const struct tm today,
-  const struct tm tomorrow,
+void print_prices(const struct tm date_today,
+  const struct tm date_tomorrow,
   const double prices[HOURS_USED])
 {
   /* Today */
-  print_prices_day(today, 0, prices);
+  print_prices_day(date_today, 0, prices);
 
   /* Tomorrow */
-  print_prices_day(tomorrow, HOURS_USED / 2, prices);
+  print_prices_day(date_tomorrow, HOURS_USED / 2, prices);
 }
 void print_date_hours(const struct tm date, const int hour)
 {
@@ -107,8 +107,8 @@ void print_date_hours(const struct tm date, const int hour)
     hour,
     hour + 1);
 }
-void print_cheapest_prices(const struct tm today,
-  const struct tm tomorrow,
+void print_cheapest_prices(const struct tm date_today,
+  const struct tm date_tomorrow,
   const double prices[HOURS_USED],
   const size_t cheapest_hours[],
   const size_t cheapest_hours_length)
@@ -118,9 +118,9 @@ void print_cheapest_prices(const struct tm today,
   for (i = 0; i < cheapest_hours_length; i++) {
     hour = cheapest_hours[i];
     if (hour < HOURS_USED / 2) {
-      print_date_hours(today, hour);
+      print_date_hours(date_today, hour);
     } else {
-      print_date_hours(tomorrow, hour);
+      print_date_hours(date_tomorrow, hour);
     }
 
 

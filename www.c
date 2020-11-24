@@ -8,10 +8,6 @@
 #include "util.h"
 #include "www.h"
 
-
-static size_t
-  write_memory_callback(void *contents, size_t size, size_t nmemb, void *userp);
-
 char *format_url(const char *const url, const struct tm date)
 {
   const size_t url_len = strlen(url);
@@ -30,44 +26,20 @@ char *format_url(const char *const url, const struct tm date)
   return formatted_url;
 }
 
-char *download_url(const char *const url)
+void download_url(const char *const url, const char *const filename)
 {
-  struct memory_struct mem;
+  FILE *file;
   CURL *curl;
-
-  mem.memory = 0;
-  mem.size = 0;
-
+  file = fopen(filename, "w");
 
   curl = curl_easy_init();
 
   curl_easy_setopt(curl, CURLOPT_URL, url);
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_memory_callback);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&mem);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
 
   curl_easy_perform(curl);
 
   curl_easy_cleanup(curl);
 
-
-  return mem.memory;
-}
-
-static size_t
-  write_memory_callback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-  const size_t realsize = size * nmemb;
-  struct memory_struct *const mem = (struct memory_struct *)userp;
-
-  char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-  assert(ptr);
-
-  mem->memory = ptr;
-
-  memcpy(&(mem->memory[mem->size]), contents, realsize);
-  mem->size += realsize;
-
-  mem->memory[mem->size] = 0;
-
-  return realsize;
+  fclose(file);
 }

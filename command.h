@@ -17,10 +17,15 @@ struct command_entry
 command_func command_help;
 command_func command_echo;
 command_func command_settings;
+command_func command_download;
+command_func command_cheapest;
 
 static const struct command_entry commands[] = { { "help", command_help },
   { "echo", command_echo },
-  { "settings", command_settings } };
+  { "settings", command_settings },
+  { "download", command_download },
+  { "cheapest", command_cheapest }
+  };
 
 char *readline(void);
 

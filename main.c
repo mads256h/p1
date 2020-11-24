@@ -36,79 +36,81 @@ int main(void)
   struct tm tmw;
   char *url;
 
-  command_loop();
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
-  tdy = *today();
-  tmw = *tomorrow();
+  command_loop();
+  /*
+
+  tdy = *date_today();
+  tmw = *date_tomorrow();
+
+*/
+  // /* Today */
+  // url = format_url(url_part, tdy);
+  // printf("%s\n", url);
+  // file_content = download_url(url);
+  // free(url);
+  // /*Parses json, changes the string into an object*/
+  // jso_today = json_tokener_parse(file_content);
+  // free(file_content);
+
+  // /* Tomorrow */
+  // url = format_url(url_part, tmw);
+  // printf("%s\n", url);
+  // file_content = download_url(url);
+  // free(url);
+  // jso_tomorrow = json_tokener_parse(file_content);
+  // free(file_content);
+
+  // /*If parsing failed*/
+  // if (!jso_today || !jso_tomorrow) {
+  //   fprintf(stderr, "Parse failed\n");
+  //   return EXIT_FAILURE;
+  // }
 
 
-  /* Today */
-  url = format_url(url_part, tdy);
-  printf("%s\n", url);
-  file_content = download_url(url);
-  free(url);
-  /*Parses json, changes the string into an object*/
-  jso_today = json_tokener_parse(file_content);
-  free(file_content);
-
-  /* Tomorrow */
-  url = format_url(url_part, tmw);
-  printf("%s\n", url);
-  file_content = download_url(url);
-  free(url);
-  jso_tomorrow = json_tokener_parse(file_content);
-  free(file_content);
-
-  /*If parsing failed*/
-  if (!jso_today || !jso_tomorrow) {
-    fprintf(stderr, "Parse failed\n");
-    return EXIT_FAILURE;
-  }
+  // /*Extracs pricedata from json*/
+  // prices = extract_price_data(jso_today, jso_tomorrow);
 
 
-  /*Extracs pricedata from json*/
-  prices = extract_price_data(jso_today, jso_tomorrow);
+  // /*Frees up memory occupied by the jso object*/
+  // json_object_put(jso_today);
+  // json_object_put(jso_tomorrow);
+
+  // printf("DK1:\n");
+  // print_prices(tdy, tmw, prices.dk1);
+
+  // printf("DK2:\n");
+  // print_prices(tdy, tmw, prices.dk2);
 
 
-  /*Frees up memory occupied by the jso object*/
-  json_object_put(jso_today);
-  json_object_put(jso_tomorrow);
+  // /*Insert code here*/
+  // /* Rebuild */
+  // printf("\nCheapest DK1:\n");
+  // cheapest_indecies =
+  //   find_cheapest_hours((size_t)0, (size_t)HOURS_USED, 0.5, prices.dk1, &hours);
 
-  printf("DK1:\n");
-  print_prices(tdy, tmw, prices.dk1);
+  // selected_price = malloc(hours * sizeof(double));
+  // printf("Charge time: %d hours\n", (int)hours);
 
-  printf("DK2:\n");
-  print_prices(tdy, tmw, prices.dk2);
+  // print_cheapest_prices(tdy, tmw, prices.dk1, cheapest_indecies, hours);
 
+  // for (i = 0; i < hours; i++) {
+  //   selected_price[i] = prices.dk1[cheapest_indecies[i]];
+  // }
 
-  /*Insert code here*/
-  /* Rebuild */
-  printf("\nCheapest DK1:\n");
-  cheapest_indecies =
-    find_cheapest_hours((size_t)0, (size_t)HOURS_USED, 0.5, prices.dk1, &hours);
+  // free(cheapest_indecies);
 
-  selected_price = malloc(hours * sizeof(double));
-  printf("Charge time: %d hours\n", (int)hours);
+  // prices_average =
+  //   average(prices.dk1, sizeof(prices.dk1) / sizeof(prices.dk1[0]));
+  // cheapest_average = average(selected_price, hours);
 
-  print_cheapest_prices(tdy, tmw, prices.dk1, cheapest_indecies, hours);
-
-  for (i = 0; i < hours; i++) {
-    selected_price[i] = prices.dk1[cheapest_indecies[i]];
-  }
-
-  free(cheapest_indecies);
-
-  prices_average =
-    average(prices.dk1, sizeof(prices.dk1) / sizeof(prices.dk1[0]));
-  cheapest_average = average(selected_price, hours);
-
-  free(selected_price);
+  // free(selected_price);
 
 
-  printf("Saved: %.2f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
+  // printf("Saved: %.2f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
 
-  curl_global_cleanup();
+  // curl_global_cleanup();
 
   return EXIT_SUCCESS;
 }

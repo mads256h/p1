@@ -1,17 +1,13 @@
-
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-
-struct memory_struct
-{
-  char *memory;
-  size_t size;
-};
+static const char url_part[] =
+  "https://www.nordpoolgroup.com/api/marketdata/page/"
+  "41?currency=,DKK,DKK,DKK&endDate=";
 
 char *format_url(const char *const url, const struct tm date);
 
-char *download_url(const char *const url);
+void download_url(const char *const url, const char *const filename);

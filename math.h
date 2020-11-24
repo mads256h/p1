@@ -18,13 +18,13 @@ double charge_to_hours(double charge);
 /*Finds the average from numberarray*/
 double average(double numbers[], size_t size);
 
-void print_prices(const struct tm today,
-  const struct tm tomorrow,
+void print_prices(const struct tm date_today,
+  const struct tm date_tomorrow,
   const double prices[HOURS_USED]);
 
 
-void print_cheapest_prices(const struct tm today,
-  const struct tm tomorrow,
+void print_cheapest_prices(const struct tm date_today,
+  const struct tm date_tomorrow,
   const double prices[HOURS_USED],
   const size_t cheapest_hours[],
   const size_t cheapest_hours_length);

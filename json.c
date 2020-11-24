@@ -139,10 +139,17 @@ double string_to_double(const char *string)
 
 json_object *get_jso_from_array_index(json_object *jso, size_t index)
 {
+  size_t length;
   assert(jso);
 
   assert(json_object_get_type(jso) == json_type_array);
-  assert(index < json_object_array_length(jso));
+  length = json_object_array_length(jso);
+
+  printf("index: %d\n", (int)index);
+  printf("length: %d\n", (int)length);
+  fflush(stdout);
+  
+  assert(index < length);
 
   return json_object_array_get_idx(jso, index);
 }
