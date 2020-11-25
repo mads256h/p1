@@ -27,7 +27,7 @@ If it asks you to restart MSYS2 do it and run the command again.
 Install dependencies:
 
 ```
-pacman -Suy mingw-w64-x86_64-json-c mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+pacman -Suy mingw-w64-x86_64-json-c mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-clang
 ```
 
 Close the MSYS2 terminal and open the MSYS2 mingw64 terminal. cd into the repository and run:

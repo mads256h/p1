@@ -25,7 +25,7 @@ jobs:
         # Update MSYS2 installation through pacman
         update: true
         # Install packages after installation through pacman
-        install: mingw-w64-x86_64-json-c mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+        install: mingw-w64-x86_64-json-c mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-clang
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
@@ -40,13 +40,13 @@ jobs:
       # Note the current convention is to use the -S and -B options here to specify source 
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_GENERATOR="MinGW Makefiles"
+      run: CC=clang cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_GENERATOR="MinGW Makefiles"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: msys2 {0}
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE
+      run: CC=clang cmake --build . --config $BUILD_TYPE
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
