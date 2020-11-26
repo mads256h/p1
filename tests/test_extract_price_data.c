@@ -118,7 +118,7 @@ struct price_data get_expected(void)
 
 int main(void)
 {
-  char * json_content;
+  char *json_content;
   int got_file = read_file("test_extract_price_data.json", &json_content);
 
   assert(got_file);

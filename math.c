@@ -14,7 +14,7 @@ size_t *find_cheapest_hours(const size_t start,
   const double capacity,
   const double charge_rate,
   const double prices[],
-  size_t * const size)
+  size_t *const size)
 {
   size_t i, j, cheapest_index, k;
   size_t *used_prices;
