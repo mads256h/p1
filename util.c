@@ -40,7 +40,7 @@ void format_date_file(char date_file_str[DATE_FILE_SIZE + 1],
 
 struct tm string_to_date(const char *const date_string)
 {
-  struct tm date;
+  struct tm date = date_today();
   sscanf(date_string, "%d-%d-%d", &date.tm_mday, &date.tm_mon, &date.tm_year);
 
   date.tm_year -= 1900;

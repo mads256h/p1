@@ -8,16 +8,19 @@
 
 #define HOURS_IN_DAY 24
 
-size_t *find_cheapest_hours(size_t start,
-  size_t end,
-  double charge,
-  double prices[],
-  size_t *size)
+size_t *find_cheapest_hours(const size_t start,
+  const size_t end,
+  const double charge,
+  const double capacity,
+  const double charge_rate,
+  const double prices[],
+  size_t * const size)
 {
   size_t i, j, cheapest_index, k;
   size_t *used_prices;
   int found;
-  size_t hours_to_charge = (size_t)ceil(charge_to_hours(charge));
+  size_t hours_to_charge =
+    (size_t)ceil(charge_to_hours(charge, capacity, charge_rate));
   used_prices = malloc(hours_to_charge * sizeof(size_t));
 
   assert(start < end);
@@ -52,14 +55,15 @@ size_t *find_cheapest_hours(size_t start,
 }
 
 
-double charge_to_hours(double charge)
+double charge_to_hours(const double charge,
+  const double capacity,
+  const double charge_rate)
 {
-  double capacity_kWh = 75.0;
-  double kWh_pr_hour = 7.00;
-
   assert(charge >= 0.0 && charge <= 1.0);
+  assert(capacity > 0.0);
+  assert(charge_rate > 0.0);
 
-  return (capacity_kWh * (1.0 - charge)) / kWh_pr_hour;
+  return (capacity * (1.0 - charge)) / charge_rate;
 }
 
 
