@@ -14,4 +14,4 @@ jobs:
     # You may pin to the exact commit or the version.
       uses: DoozyX/clang-format-lint-action@v0.9
       with:
-        clangFormatVersion: 10
+        clangFormatVersion: 11
