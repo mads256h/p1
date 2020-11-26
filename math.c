@@ -8,16 +8,19 @@
 
 #define HOURS_IN_DAY 24
 
-size_t *find_cheapest_hours(size_t start,
-  size_t end,
-  double charge,
-  double prices[],
-  size_t *size)
+size_t *find_cheapest_hours(const size_t start,
+  const size_t end,
+  const double charge,
+  const double capacity,
+  const double charge_rate,
+  const double prices[],
+  size_t *const size)
 {
   size_t i, j, cheapest_index, k;
   size_t *used_prices;
   int found;
-  size_t hours_to_charge = (size_t)ceil(charge_to_hours(charge));
+  size_t hours_to_charge =
+    (size_t)ceil(charge_to_hours(charge, capacity, charge_rate));
   used_prices = malloc(hours_to_charge * sizeof(size_t));
 
   assert(start < end);
@@ -52,14 +55,15 @@ size_t *find_cheapest_hours(size_t start,
 }
 
 
-double charge_to_hours(double charge)
+double charge_to_hours(const double charge,
+  const double capacity,
+  const double charge_rate)
 {
-  double capacity_kWh = 75.0;
-  double kWh_pr_hour = 7.00;
-
   assert(charge >= 0.0 && charge <= 1.0);
+  assert(capacity > 0.0);
+  assert(charge_rate > 0.0);
 
-  return (capacity_kWh * (1.0 - charge)) / kWh_pr_hour;
+  return (capacity * (1.0 - charge)) / charge_rate;
 }
 
 
@@ -88,27 +92,27 @@ void print_prices_day(const struct tm date,
   }
 }
 
-void print_prices(const struct tm today,
-  const struct tm tomorrow,
+void print_prices(const struct tm date_today,
+  const struct tm date_tomorrow,
   const double prices[HOURS_USED])
 {
   /* Today */
-  print_prices_day(today, 0, prices);
+  print_prices_day(date_today, 0, prices);
 
   /* Tomorrow */
-  print_prices_day(tomorrow, HOURS_USED / 2, prices);
+  print_prices_day(date_tomorrow, HOURS_USED / 2, prices);
 }
 void print_date_hours(const struct tm date, const int hour)
 {
-  printf("%04d-%02d-%02d T %02d-%02d",
-    date.tm_year + 1900,
-    date.tm_mon + 1,
-    date.tm_mday,
-    hour,
-    hour + 1);
+  char date_str[DATE_SIZE + 1];
+
+  format_date(date_str, date);
+
+
+  printf("%s T %02d-%02d", date_str, hour, hour + 1);
 }
-void print_cheapest_prices(const struct tm today,
-  const struct tm tomorrow,
+void print_cheapest_prices(const struct tm date_today,
+  const struct tm date_tomorrow,
   const double prices[HOURS_USED],
   const size_t cheapest_hours[],
   const size_t cheapest_hours_length)
@@ -118,9 +122,9 @@ void print_cheapest_prices(const struct tm today,
   for (i = 0; i < cheapest_hours_length; i++) {
     hour = cheapest_hours[i];
     if (hour < HOURS_USED / 2) {
-      print_date_hours(today, hour);
+      print_date_hours(date_today, hour);
     } else {
-      print_date_hours(tomorrow, hour);
+      print_date_hours(date_tomorrow, hour - (HOURS_USED / 2));
     }
 
 

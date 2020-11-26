@@ -1,5 +1,5 @@
 #!/bin/sh
 
 
-cmake . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_GENERATOR="MinGW Makefiles"
-cmake --build . --config Debug
+CC=clang cmake . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_GENERATOR="MinGW Makefiles"
+CC=clang cmake --build . --config Debug

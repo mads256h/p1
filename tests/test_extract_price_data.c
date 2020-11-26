@@ -118,8 +118,10 @@ struct price_data get_expected(void)
 
 int main(void)
 {
-#ifndef __MINGW32__
-  char *const json_content = read_file("test_extract_price_data.json");
+  char *json_content;
+  int got_file = read_file("test_extract_price_data.json", &json_content);
+
+  assert(got_file);
 
   assert(json_content);
 
@@ -136,7 +138,7 @@ int main(void)
   assert(memcmp(&expected, &actual, sizeof(struct price_data)) == 0);
 
   json_object_put(jso);
-#endif
+
 
   return EXIT_SUCCESS;
 }
