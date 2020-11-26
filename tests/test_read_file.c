@@ -22,7 +22,10 @@ const char *windows_str =
 
 int main(void)
 {
-  char *file_content = read_file("test_read_file.json");
+  char *file_content;
+  int got_file = read_file("test_read_file.json", &file_content);
+
+  assert(got_file);
 
   assert(file_content);
 
