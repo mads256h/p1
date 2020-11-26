@@ -100,12 +100,12 @@ void print_prices(const struct tm date_today,
 }
 void print_date_hours(const struct tm date, const int hour)
 {
-  printf("%04d-%02d-%02d T %02d-%02d",
-    date.tm_year + 1900,
-    date.tm_mon + 1,
-    date.tm_mday,
-    hour,
-    hour + 1);
+  char date_str[DATE_SIZE + 1];
+
+  format_date(date_str, date);
+
+
+  printf("%s T %02d-%02d", date_str, hour, hour + 1);
 }
 void print_cheapest_prices(const struct tm date_today,
   const struct tm date_tomorrow,
@@ -120,7 +120,7 @@ void print_cheapest_prices(const struct tm date_today,
     if (hour < HOURS_USED / 2) {
       print_date_hours(date_today, hour);
     } else {
-      print_date_hours(date_tomorrow, hour);
+      print_date_hours(date_tomorrow, hour - (HOURS_USED / 2));
     }
 
 

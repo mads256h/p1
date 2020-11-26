@@ -46,7 +46,6 @@ int command_echo(size_t argc,
   for (i = 1; i < argc; i++) { printf("%s ", argv[i]); }
 
   printf("\n");
-  fflush(stdout);
   return EXIT_SUCCESS;
 }
 
@@ -73,7 +72,6 @@ int command_settings(size_t argc,
   if (argc == 3 && strcmp(argv[1], "put") == 0) { data->test = atoi(argv[2]); }
   if (strcmp(argv[1], "get") == 0) { printf("%d\n", data->test); }
 
-  fflush(stdout);
   return EXIT_SUCCESS;
 }
 
@@ -84,10 +82,18 @@ int command_download(size_t argc,
   char *url;
   char filename[DATE_FILE_SIZE + 1] = { 0 };
   struct tm date = date_today();
+  const struct tm today = date_today();
+  const struct tm tomorrow = date_tomorrow(today);
 
   HANDLE_HELP("none OR date");
 
   if (argc == 2) { date = string_to_date(argv[1]); }
+
+  if (!(date_compare(date, today) <= 0
+        || (date_compare(date, tomorrow) == 0 && today.tm_hour >= 12))) {
+    printf("Cannot download this date\n");
+    return EXIT_SUCCESS;
+  }
 
   url = format_url(url_part, date);
   format_date_file(filename, date);
@@ -106,32 +112,52 @@ int command_cheapest(size_t argc,
 {
   char filename[DATE_FILE_SIZE + 1] = { 0 };
   char *file_content;
-  json_object *jso;
+  json_object *jso_today, *jso_tomorrow;
   struct price_data prices;
   size_t *cheapest;
   size_t length;
   size_t start, end;
-  struct tm date = date_today();
+  struct tm date1 = date_today(), date2;
 
-  HANDLE_HELP("start end OR start end date");
+  HANDLE_HELP("start end OR start end date1 date2");
 
   if (argc < 3) { goto help; }
 
   start = (size_t)atoi(argv[1]);
   end = (size_t)atoi(argv[2]);
 
-  if (argc == 4) { date = string_to_date(argv[3]); }
+  if (argc == 4) {
+    date1 = string_to_date(argv[3]);
+  } else if (argc > 4) {
+    goto help;
+  }
 
-  format_date_file(filename, date);
-  file_content = read_file(filename);
-  jso = json_tokener_parse(file_content);
+  date2 = date_tomorrow(date1);
+
+  format_date_file(filename, date1);
+  if (!read_file(filename, &file_content)) {
+    perror("could not open file");
+    return EXIT_SUCCESS;
+  }
+  jso_today = json_tokener_parse(file_content);
   free(file_content);
 
-  prices = extract_price_data(jso, jso);
-  json_object_put(jso);
+  format_date_file(filename, date2);
+  if (!read_file(filename, &file_content)) {
+    json_object_put(jso_today);
+    perror("could not open file");
+    return EXIT_SUCCESS;
+  }
+
+  jso_tomorrow = json_tokener_parse(file_content);
+  free(file_content);
+
+  prices = extract_price_data(jso_today, jso_tomorrow);
+  json_object_put(jso_today);
+  json_object_put(jso_tomorrow);
 
   cheapest = find_cheapest_hours(start, end, 0, prices.dk1, &length);
-  print_cheapest_prices(date, date, prices.dk1, cheapest, length);
+  print_cheapest_prices(date1, date2, prices.dk1, cheapest, length);
   free(cheapest);
 
   return EXIT_SUCCESS;
@@ -184,6 +210,7 @@ int command_loop(void)
   struct split_string_data split;
   struct command_data data;
   do {
+    fflush(stdout);
     line = readline();
     if (!line) { continue; }
 

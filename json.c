@@ -6,32 +6,38 @@
 #include <string.h>
 
 
-char *read_file(const char *filename)
+int read_file(const char *filename, /* out */ char **content)
 {
   int c;
 
   size_t i = 0, cur_size = 0;
-  char *buffer = 0;
   FILE *file;
 
   file = fopen(filename, "r");
-  assert(file);
+
+  if (!file) { return 0; }
+
+  *content = 0;
 
   while ((c = fgetc(file)) != EOF) {
     if ((i + 2) > cur_size) {
       cur_size += BUFFER_SIZE;
-      buffer = realloc(buffer, cur_size);
-      assert(buffer);
+      *content = realloc(*content, cur_size);
+      assert(*content);
+      assert(cur_size > i + 2);
     }
-    buffer[i] = (char)c;
+    (*content)[i] = (char)c;
     i++;
   }
-  assert(buffer);
-  buffer[i] = 0;
+
+  if (!*content) { return 0; }
+
+  (*content)[i] = 0;
   fclose(file);
 
   assert(i < cur_size);
-  return buffer;
+
+  return 1;
 }
 
 

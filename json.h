@@ -28,9 +28,9 @@ struct split_string_data
 };
 
 
-/*Reads the file with the filename, returns a string with filecontents
+/*Reads the file with the filename, returns true if successful
   Remember to call free(free the memory)*/
-char *read_file(const char *filename);
+int read_file(const char *filename, /* out */ char **content);
 
 
 /*Extract the pricedata from the json object,
