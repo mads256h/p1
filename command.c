@@ -1,8 +1,9 @@
 #include "command.h"
 #include "json.h"
-#include "util.h"
 #include "math.h"
+#include "util.h"
 #include "www.h"
+
 #include <inttypes.h>
 #include <json-c/json.h>
 #include <stddef.h>
@@ -10,12 +11,27 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 int command_help(size_t argc,
   const char *const argv[],
   struct command_data *data)
 {
-  printf("hello world\n");
-  fflush(stdout);
+  size_t i;
+
+  struct split_string_data arguments;
+  arguments.strings = malloc(sizeof(char *) * 2);
+  arguments.size = 2;
+  arguments.strings[1] = "help";
+
+  for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
+    if (strcmp(commands[i].name, "help") == 0) { continue; }
+
+    arguments.strings[0] = commands[i].name;
+    commands[i].command(arguments.size, arguments.strings, data);
+  }
+
+  free(arguments.strings);
+
   return EXIT_SUCCESS;
 }
 
@@ -24,10 +40,25 @@ int command_echo(size_t argc,
   struct command_data *data)
 {
   size_t i;
-  for (i = 0; i < argc; i++) { printf("%s ", argv[i]); }
+
+  HANDLE_HELP("args");
+
+  for (i = 1; i < argc; i++) { printf("%s ", argv[i]); }
+
   printf("\n");
   fflush(stdout);
   return EXIT_SUCCESS;
+}
+
+int command_quit(size_t argc,
+  const char *const argv[],
+  struct command_data *data)
+{
+  (void)data;
+
+  HANDLE_HELP("");
+
+  return EXIT_FAILURE;
 }
 
 
@@ -35,9 +66,13 @@ int command_settings(size_t argc,
   const char *const argv[],
   struct command_data *data)
 {
-  if (argc < 2) { return EXIT_FAILURE; }
+  HANDLE_HELP("put number OR get");
+
+  if (argc < 2) { goto help; }
+
   if (argc == 3 && strcmp(argv[1], "put") == 0) { data->test = atoi(argv[2]); }
   if (strcmp(argv[1], "get") == 0) { printf("%d\n", data->test); }
+
   fflush(stdout);
   return EXIT_SUCCESS;
 }
@@ -47,48 +82,58 @@ int command_download(size_t argc,
   struct command_data *data)
 {
   char *url;
-  char filename[DATE_FILE_SIZE+1] = {0};
+  char filename[DATE_FILE_SIZE + 1] = { 0 };
   struct tm date = date_today();
+
+  HANDLE_HELP("none OR date");
+
   if (argc == 2) { date = string_to_date(argv[1]); }
+
   url = format_url(url_part, date);
   format_date_file(filename, date);
-  printf("%d\n", (int)strlen(filename));
-  fflush(stdout);
+
   download_url(url, filename);
   free(url);
+
+  printf("Downloaded \"%s\"\n", filename);
+
+  return EXIT_SUCCESS;
 }
 
 int command_cheapest(size_t argc,
   const char *const argv[],
   struct command_data *data)
 {
-  char filename[DATE_FILE_SIZE + 1] = {0};
+  char filename[DATE_FILE_SIZE + 1] = { 0 };
   char *file_content;
   json_object *jso;
   struct price_data prices;
   size_t *cheapest;
   size_t length;
-  int start, end;
+  size_t start, end;
   struct tm date = date_today();
-  if (argc < 3) { return EXIT_FAILURE; }
-  start = atoi(argv[1]);
-  end = atoi(argv[2]);
+
+  HANDLE_HELP("start end OR start end date");
+
+  if (argc < 3) { goto help; }
+
+  start = (size_t)atoi(argv[1]);
+  end = (size_t)atoi(argv[2]);
 
   if (argc == 4) { date = string_to_date(argv[3]); }
-  format_date_file(filename, date);
-  printf("%d\n", (int)strlen(filename));
-  fflush(stdout);
 
+  format_date_file(filename, date);
   file_content = read_file(filename);
   jso = json_tokener_parse(file_content);
   free(file_content);
+
   prices = extract_price_data(jso, jso);
   json_object_put(jso);
+
   cheapest = find_cheapest_hours(start, end, 0, prices.dk1, &length);
-
-
   print_cheapest_prices(date, date, prices.dk1, cheapest, length);
   free(cheapest);
+
   return EXIT_SUCCESS;
 }
 
@@ -111,20 +156,27 @@ char *readline(void)
 
   return string;
 }
+
 int handle_command(size_t argc,
   const char *const argv[],
   struct command_data *data)
 {
   size_t i;
-  printf("%s\n", argv[0]);
+  int ret = -1;
   for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
     if (strcmp(argv[0], commands[i].name) == 0) {
-
-      (commands[i].command)(argc, argv, data);
+      ret = commands[i].command(argc, argv, data);
     }
   }
-  return 0;
+
+  if (ret == -1) {
+    printf("Command not found\n");
+    return 0;
+  }
+
+  return ret;
 }
+
 int command_loop(void)
 {
   int exit;
@@ -134,11 +186,12 @@ int command_loop(void)
   do {
     line = readline();
     if (!line) { continue; }
-    printf("%s\n", line);
-    fflush(stdout);
+
     split = split_string(line, ' ');
     exit = handle_command(split.size, split.strings, &data);
     free_split_string(split);
     free(line);
   } while (exit == 0);
+
+  return exit;
 }

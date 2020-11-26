@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <time.h>
 #include <string.h>
+#include <time.h>
 
 #include "util.h"
 
@@ -28,13 +28,15 @@ void format_date(char date_str[DATE_SIZE + 1], const struct tm date)
     date.tm_year + 1900);
 }
 
-void format_date_file(char date_file_str[DATE_FILE_SIZE + 1], const struct tm date){
+void format_date_file(char date_file_str[DATE_FILE_SIZE + 1],
+  const struct tm date)
+{
   format_date(date_file_str, date);
   strcat(date_file_str, ".json");
-  
 }
 
-struct tm string_to_date(const char * const date_string){
+struct tm string_to_date(const char *const date_string)
+{
   struct tm date;
   sscanf(date_string, "%d-%d-%d", &date.tm_mday, &date.tm_mon, &date.tm_year);
   date.tm_mon--;

@@ -10,35 +10,21 @@
 #include <string.h>
 #include <time.h>
 
+#include "command.h"
 #include "json.h"
 #include "math.h"
 #include "util.h"
 #include "www.h"
 
-#include "command.h"
-
 
 int main(void)
 {
-  char *file_content;
-  json_object *jso_today;
-  json_object *jso_tomorrow;
-  struct price_data prices;
-  size_t i, hours;
-  size_t *cheapest_indecies;
-  double *selected_price;
-  double prices_average;
-  double cheapest_average;
-  const char url_part[] =
-    "https://www.nordpoolgroup.com/api/marketdata/page/"
-    "41?currency=,DKK,DKK,DKK&endDate=";
-  struct tm tdy;
-  struct tm tmw;
-  char *url;
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   command_loop();
+
+  curl_global_cleanup();
   /*
 
   tdy = *date_today();
@@ -88,7 +74,8 @@ int main(void)
   // /* Rebuild */
   // printf("\nCheapest DK1:\n");
   // cheapest_indecies =
-  //   find_cheapest_hours((size_t)0, (size_t)HOURS_USED, 0.5, prices.dk1, &hours);
+  //   find_cheapest_hours((size_t)0, (size_t)HOURS_USED, 0.5, prices.dk1,
+  //   &hours);
 
   // selected_price = malloc(hours * sizeof(double));
   // printf("Charge time: %d hours\n", (int)hours);
@@ -108,9 +95,9 @@ int main(void)
   // free(selected_price);
 
 
-  // printf("Saved: %.2f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
+  // printf("Saved: %.2f%%\n", (1.0 - cheapest_average / prices_average) *
+  // 100.0);
 
-  // curl_global_cleanup();
 
   return EXIT_SUCCESS;
 }

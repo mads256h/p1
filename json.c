@@ -16,10 +16,7 @@ char *read_file(const char *filename)
 
   file = fopen(filename, "r");
   assert(file);
-  fseek(file, 0, SEEK_END);
-  printf("%d\n", (int)ftell(file));
-  fflush(stdout);
-  rewind(file);
+
   while ((c = fgetc(file)) != EOF) {
     if ((i + 2) > cur_size) {
       cur_size += BUFFER_SIZE;
@@ -101,18 +98,14 @@ json_object *get_jso_from_format(json_object *jso, const char *format, ...)
   for (i = 0; i < str_len; i++) {
     if (format[i] == 'i') {
       index_test = va_arg(ap, size_t);
-      printf("%d\n", index_test);
       cur_jso = get_jso_from_array_index(cur_jso, index_test);
-      print_json_object(cur_jso, 0, 0);
     } else if (format[i] == 'k') {
       string_test = va_arg(ap, const char *);
-      printf("%s\n", string_test);
       cur_jso = get_jso_from_keys(cur_jso, string_test);
     } else {
       assert(0);
     }
 
-    printf("%p\n", cur_jso);
     assert(cur_jso);
   }
 
@@ -156,11 +149,7 @@ json_object *get_jso_from_array_index(json_object *jso, size_t index)
   assert(json_object_get_type(jso) == json_type_array);
   length = json_object_array_length(jso);
 
-  printf("index: %d\n", (int)index);
-  printf("length: %d\n", (int)length);
-  fflush(stdout);
-
-  assert((int)index < (int)length);
+  assert(index < length);
 
   return json_object_array_get_idx(jso, index);
 }
