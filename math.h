@@ -20,10 +20,12 @@ size_t *find_cheapest_hours(const size_t start,
 /*Finds the average from numberarray*/
 double average(const double numbers[], const size_t size);
 
+/* Prints prices */
 void print_prices(const struct tm date_today,
   const struct tm date_tomorrow,
   const double prices[HOURS_USED]);
 
+/* Prints the cheapest prices */
 void print_cheapest_prices(const struct tm date_today,
   const struct tm date_tomorrow,
   const double prices[HOURS_USED],

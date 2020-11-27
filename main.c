@@ -6,6 +6,7 @@
 
 int main(void)
 {
+  /* Initialize curl library */
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
   command_loop();

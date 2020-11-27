@@ -13,10 +13,40 @@
 #include <string.h>
 
 
+/* Converts a macro function parameter to string */
+#define TO_STRING(s) TO_STRING_IMPL(s)
+#define TO_STRING_IMPL(s) #s
+
+/* Sets a key in settings */
+#define SETTINGS_SET_DOUBLE_HELPER(key, condition, errortext) \
+  if (strcmp(argv[2], TO_STRING(key)) == 0) {                 \
+    value = atof(argv[3]);                                    \
+    if (condition) {                                          \
+      printf(errortext "\n");                                 \
+      return EXIT_SUCCESS;                                    \
+    }                                                         \
+    data->key = value;                                        \
+    return EXIT_SUCCESS;                                      \
+  }
+
+/* Gets a key in settings */
+#define SETTINGS_GET_DOUBLE_HELPER(key)       \
+  if (strcmp(argv[2], TO_STRING(key)) == 0) { \
+    if (data->key == -1.0) {                  \
+      printf(TO_STRING(key) " is not set\n"); \
+      return EXIT_SUCCESS;                    \
+    }                                         \
+    printf("%f\n", data->key);                \
+    return EXIT_SUCCESS;                      \
+  }
+
+/* Loads the users saved config */
 struct command_data load_config(void);
 
+/* Reads in a line from the terminal */
 char *readline(void);
 
+/* Runs the command specified */
 int handle_command(size_t argc,
   const char *const argv[],
   struct command_data *data);
@@ -46,12 +76,12 @@ int command_loop(void)
 
 struct command_data load_config(void)
 {
-  FILE *file;
+  FILE *const file = fopen("config.cfg", "r");
   struct command_data data;
   char entry[50];
 
-  file = fopen("config.cfg", "r");
 
+  /* If "config.cfg" does not exist use default values */
   if (!file) {
     data.charge = -1.0;
     data.capacity = -1.0;
@@ -60,6 +90,7 @@ struct command_data load_config(void)
     return data;
   }
 
+  /* While there is a line to read */
   while (fscanf(file, "%[^ ]", entry) == 1) {
     if (strcmp(entry, "charge") == 0) {
       fscanf(file, "%lf\n", &data.charge);
@@ -73,6 +104,7 @@ struct command_data load_config(void)
   }
 
   fclose(file);
+
 
   return data;
 }
@@ -101,20 +133,16 @@ int handle_command(size_t argc,
   struct command_data *data)
 {
   size_t i;
-  int ret = -1;
+
+  /* Go through each command and find the one specified in argv[0] */
   for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
     if (strcmp(argv[0], commands[i].name) == 0) {
-      ret = commands[i].command(argc, argv, data);
-      break;
+      return commands[i].command(argc, argv, data);
     }
   }
 
-  if (ret == -1) {
-    printf("Command not found\n");
-    return 0;
-  }
-
-  return ret;
+  printf("Command not found\n");
+  return EXIT_SUCCESS;
 }
 
 
@@ -130,6 +158,7 @@ int command_help(size_t argc,
   (void)argc;
   (void)argv;
 
+  /* Go through each command and run it with the argument "help" */
   for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
     if (strcmp(commands[i].name, "help") == 0) { continue; }
 
@@ -140,6 +169,7 @@ int command_help(size_t argc,
   return EXIT_SUCCESS;
 }
 
+
 int command_quit(size_t argc,
   const char *const argv[],
   struct command_data *data)
@@ -148,6 +178,7 @@ int command_quit(size_t argc,
 
   HANDLE_HELP("");
 
+  /* EXIT_FAILURE stops the command loop */
   return EXIT_FAILURE;
 }
 
@@ -159,39 +190,22 @@ int command_settings(size_t argc,
   double charge;
   double capacity;
   double rate;
+  double value;
 
   HANDLE_HELP("set \"key\" value OR get \"key\"");
 
   if (argc < 2 || argc > 4) { goto help; }
 
+  /* If the user types in set */
   if (argc == 4 && strcmp(argv[1], "set") == 0) {
-    if (strcmp(argv[2], "charge") == 0) {
-      charge = atof(argv[3]);
+    SETTINGS_SET_DOUBLE_HELPER(charge,
+      value > 1.0 || value < 0.0,
+      "charge has to be between 0.0 and 1.0");
+    SETTINGS_SET_DOUBLE_HELPER(
+      capacity, value <= 0.0, "this is not an electric car");
+    SETTINGS_SET_DOUBLE_HELPER(rate, value <= 0.0, "rate has to be positive");
 
-      if (charge > 1.0 || charge < 0.0) {
-        printf("charge has to be between 0.0 and 1.0\n");
-        return EXIT_SUCCESS;
-      }
-      data->charge = charge;
-    } else if (strcmp(argv[2], "capacity") == 0) {
-      capacity = atof(argv[3]);
-
-      if (capacity <= 0.0) {
-        printf("this is not an electric car\n");
-        return EXIT_SUCCESS;
-      }
-
-      data->capacity = capacity;
-    } else if (strcmp(argv[2], "rate") == 0) {
-      rate = atof(argv[3]);
-
-      if (rate <= 0.0) {
-        printf("rate has to be positive\n");
-        return EXIT_SUCCESS;
-      }
-
-      data->rate = rate;
-    } else if (strcmp(argv[2], "region") == 0) {
+    if (strcmp(argv[2], "region") == 0) {
       if (strcmp(argv[3], "dk1") == 0) {
         data->region = 1;
       } else if (strcmp(argv[3], "dk2") == 0) {
@@ -199,40 +213,26 @@ int command_settings(size_t argc,
       } else {
         printf("Invalid region\n");
       }
+      return EXIT_SUCCESS;
     }
   }
 
+  /* If the user types in get */
   if (argc == 3 && strcmp(argv[1], "get") == 0) {
-    if (strcmp(argv[2], "charge") == 0) {
-      if (data->charge == -1.0) {
-        printf("charge has no value\n");
-        return EXIT_SUCCESS;
-      }
+    SETTINGS_GET_DOUBLE_HELPER(charge);
+    SETTINGS_GET_DOUBLE_HELPER(capacity);
+    SETTINGS_GET_DOUBLE_HELPER(rate);
 
-      printf("%f\n", data->charge);
-    } else if (strcmp(argv[2], "capacity") == 0) {
-      if (data->capacity == -1.0) {
-        printf("capacity has no value\n");
-        return EXIT_SUCCESS;
-      }
-
-      printf("%f\n", data->capacity);
-    } else if (strcmp(argv[2], "rate") == 0) {
-      if (data->rate == -1.0) {
-        printf("rate has no value\n");
-        return EXIT_SUCCESS;
-      }
-
-      printf("%f\n", data->rate);
-    } else if (strcmp(argv[2], "region") == 0) {
+    if (strcmp(argv[2], "region") == 0) {
       printf("%s\n",
         data->region == 1   ? "dk1"
         : data->region == 2 ? "dk2"
                             : "none");
+      return EXIT_SUCCESS;
     }
   }
 
-  return EXIT_SUCCESS;
+  goto help;
 }
 
 int command_download(size_t argc,

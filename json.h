@@ -18,18 +18,20 @@ struct price_data
 
 /*Extract the pricedata from the json object,
   returns a struct with two arrays(dk1 & dk2)*/
-struct price_data extract_price_data(json_object *jso_today,
-  json_object *jso_tomorrow);
+struct price_data extract_price_data(json_object *const jso_today,
+  json_object *const jso_tomorrow);
 
 
 /*Gets a child of jso specified by the format string and varargs*/
-json_object *get_jso_from_format(json_object *jso, const char *format, ...);
+json_object *
+  get_jso_from_format(json_object *const jso, const char *const format, ...);
 
 /*Gets a child of jso array by index*/
-json_object *get_jso_from_array_index(json_object *jso, size_t index);
+json_object *get_jso_from_array_index(json_object *const jso,
+  const size_t index);
 
 /*Gets a child of jso by keys split by '.'*/
-json_object *get_jso_from_keys(json_object *jso, const char *keys);
+json_object *get_jso_from_keys(json_object *const jso, const char *const keys);
 
 
 /*Prints a jso*/

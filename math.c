@@ -15,10 +15,12 @@ double charge_to_hours(const double charge,
   const double capacity,
   const double charge_rate);
 
+/* Prints one day of prices */
 void print_prices_day(const struct tm date,
   const size_t start,
   const double prices[HOURS_USED]);
 
+/* Prints a date followed by an hour interval */
 void print_date_hours(const struct tm date, const int hour);
 
 
@@ -71,10 +73,14 @@ size_t *find_cheapest_hours(const size_t start,
 double average(const double numbers[], const size_t size)
 {
   size_t i;
-  double sum = 0;
+  double sum = 0.0;
 
   assert(numbers);
-  assert(size > 0);
+
+  assert(size >= 0);
+
+  if (size == 0) { return 0.0; }
+
 
   /* Summate all numbers */
   for (i = 0; i < size; i++) { sum += numbers[i]; }

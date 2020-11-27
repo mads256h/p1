@@ -7,8 +7,8 @@
 #include "json.h"
 
 
-struct price_data extract_price_data(json_object *jso_today,
-  json_object *jso_tomorrow)
+struct price_data extract_price_data(json_object *const jso_today,
+  json_object *const jso_tomorrow)
 {
   size_t i;
   json_object *value;
@@ -51,7 +51,8 @@ struct price_data extract_price_data(json_object *jso_today,
 }
 
 
-json_object *get_jso_from_format(json_object *jso, const char *format, ...)
+json_object *
+  get_jso_from_format(json_object *const jso, const char *const format, ...)
 {
   va_list ap;
   size_t i, str_len;
@@ -87,7 +88,8 @@ json_object *get_jso_from_format(json_object *jso, const char *format, ...)
   return cur_jso;
 }
 
-json_object *get_jso_from_array_index(json_object *jso, size_t index)
+json_object *get_jso_from_array_index(json_object *const jso,
+  const size_t index)
 {
   size_t length;
   assert(jso);
@@ -101,7 +103,7 @@ json_object *get_jso_from_array_index(json_object *jso, size_t index)
 }
 
 
-json_object *get_jso_from_keys(json_object *jso, const char *keys)
+json_object *get_jso_from_keys(json_object *const jso, const char *const keys)
 {
   json_object *cur_jso;
   struct split_string_data split;

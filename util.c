@@ -9,8 +9,9 @@
 
 #define SECS_IN_DAY (60 * 60 * 24)
 
+char *str_dup(const char *const str);
 
-int read_file(const char *filename, /* out */ char **content)
+int read_file(const char *filename, /* out */ char **const content)
 {
   int c;
 
@@ -23,6 +24,7 @@ int read_file(const char *filename, /* out */ char **content)
 
   *content = 0;
 
+  /* While there is something to read */
   while ((c = fgetc(file)) != EOF) {
     if ((i + 2) > cur_size) {
       cur_size += BUFFER_SIZE;
@@ -54,9 +56,10 @@ struct tm date_today(void)
   return date;
 }
 
-struct tm date_tomorrow(struct tm date)
+struct tm date_tomorrow(const struct tm date)
 {
-  const time_t epoch = mktime(&date) + SECS_IN_DAY;
+  struct tm tmp_date = date;
+  const time_t epoch = mktime(&tmp_date) + SECS_IN_DAY;
 
   return *gmtime(&epoch);
 }
@@ -93,7 +96,7 @@ double string_to_double(const char *string)
 
   assert(string);
 
-  dup = strdup(string);
+  dup = str_dup(string);
   assert(dup);
 
   str_len = strlen(dup);
@@ -117,7 +120,7 @@ struct split_string_data split_string(const char *string, const char split_char)
 
   assert(string);
 
-  dup = strdup(string);
+  dup = str_dup(string);
 
   assert(dup);
 
@@ -154,6 +157,22 @@ void free_split_string(struct split_string_data data)
 
   free(data.strings[0]);
   free(data.strings);
+}
+
+char *str_dup(const char *const str)
+{
+  const size_t len = strlen(str);
+
+  /* Allocate string + null terminator */
+  char *const ret = malloc(len + 1);
+
+  assert(ret);
+
+  /* Copy str to ret */
+  strcpy(ret, str);
+
+
+  return ret;
 }
 
 
