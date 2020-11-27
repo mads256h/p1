@@ -1,48 +1,14 @@
-#include "json.h"
 #include <assert.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-
-int read_file(const char *filename, /* out */ char **content)
-{
-  int c;
-
-  size_t i = 0, cur_size = 0;
-  FILE *file;
-
-  file = fopen(filename, "r");
-
-  if (!file) { return 0; }
-
-  *content = 0;
-
-  while ((c = fgetc(file)) != EOF) {
-    if ((i + 2) > cur_size) {
-      cur_size += BUFFER_SIZE;
-      *content = realloc(*content, cur_size);
-      assert(*content);
-      assert(cur_size > i + 2);
-    }
-    (*content)[i] = (char)c;
-    i++;
-  }
-
-  if (!*content) { return 0; }
-
-  (*content)[i] = 0;
-  fclose(file);
-
-  assert(i < cur_size);
-
-  return 1;
-}
+#include "json.h"
 
 
-struct price_data extract_price_data(json_object *jso_today,
-  json_object *jso_tomorrow)
+struct price_data extract_price_data(json_object *const jso_today,
+  json_object *const jso_tomorrow)
 {
   size_t i;
   json_object *value;
@@ -85,7 +51,8 @@ struct price_data extract_price_data(json_object *jso_today,
 }
 
 
-json_object *get_jso_from_format(json_object *jso, const char *format, ...)
+json_object *
+  get_jso_from_format(json_object *const jso, const char *const format, ...)
 {
   va_list ap;
   size_t i, str_len;
@@ -121,33 +88,8 @@ json_object *get_jso_from_format(json_object *jso, const char *format, ...)
   return cur_jso;
 }
 
-
-double string_to_double(const char *string)
-{
-  char *dup;
-  size_t str_len, i;
-  double value;
-
-  assert(string);
-
-  dup = strdup(string);
-  assert(dup);
-
-  str_len = strlen(dup);
-
-  for (i = 0; i < str_len; i++) {
-    if (dup[i] == ',') { dup[i] = '.'; }
-  }
-
-  value = strtod(dup, 0);
-
-  free(dup);
-
-  return value;
-}
-
-
-json_object *get_jso_from_array_index(json_object *jso, size_t index)
+json_object *get_jso_from_array_index(json_object *const jso,
+  const size_t index)
 {
   size_t length;
   assert(jso);
@@ -161,7 +103,7 @@ json_object *get_jso_from_array_index(json_object *jso, size_t index)
 }
 
 
-json_object *get_jso_from_keys(json_object *jso, const char *keys)
+json_object *get_jso_from_keys(json_object *const jso, const char *const keys)
 {
   json_object *cur_jso;
   struct split_string_data split;
@@ -184,55 +126,6 @@ json_object *get_jso_from_keys(json_object *jso, const char *keys)
 
   return cur_jso;
 }
-
-
-struct split_string_data split_string(const char *string, const char split_char)
-{
-  char *dup;
-  size_t str_len, char_count = 0, i, j = 1;
-  struct split_string_data ret;
-
-  assert(string);
-
-  dup = strdup(string);
-
-  assert(dup);
-
-  str_len = strlen(dup);
-
-  /* Count the amount of 'split_char's in string */
-  for (i = 0; i < str_len; i++) {
-    if (dup[i] == split_char) { char_count++; }
-  }
-
-  ret.size = char_count + 1;
-  ret.strings = malloc(ret.size * sizeof(char *));
-
-  assert(ret.strings);
-
-  ret.strings[0] = dup;
-
-  for (i = 0; i < str_len; i++) {
-    if (dup[i] == split_char) {
-      dup[i] = 0;
-      ret.strings[j++] = dup + i + 1;
-    }
-  }
-
-  assert(j == ret.size);
-
-  return ret;
-}
-
-void free_split_string(struct split_string_data data)
-{
-  assert(data.strings);
-  assert(data.strings[0]);
-
-  free(data.strings[0]);
-  free(data.strings);
-}
-
 
 void print_json_object(json_object *const json,
   const size_t indent,

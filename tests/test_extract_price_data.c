@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "json.h"
+#include "util.h"
 
 
 struct price_data get_expected(void)
