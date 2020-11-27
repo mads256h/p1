@@ -1,10 +1,11 @@
-#include <inttypes.h>
+#ifndef COMMAND_H
+#define COMMAND_H
 #include <stddef.h>
-
 
 #define HANDLE_HELP(usage)                           \
   do {                                               \
     if (argc == 2 && strcmp(argv[1], "help") == 0) { \
+      goto help;                                     \
     help:                                            \
       printf("USAGE: %s %s\n", argv[0], usage);      \
       fflush(stdout);                                \
@@ -37,7 +38,6 @@ struct command_entry
 };
 
 command_func command_help;
-command_func command_echo;
 command_func command_quit;
 command_func command_settings;
 command_func command_download;
@@ -45,17 +45,13 @@ command_func command_cheapest;
 command_func command_save;
 
 static const struct command_entry commands[] = { { "help", command_help },
-  { "echo", command_echo },
   { "quit", command_quit },
   { "settings", command_settings },
   { "download", command_download },
   { "cheapest", command_cheapest },
   { "save", command_save } };
 
-char *readline(void);
-
-int handle_command(size_t argc,
-  const char *const argv[],
-  struct command_data *data);
-
+/**/
 int command_loop(void);
+
+#endif

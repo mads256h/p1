@@ -1,7 +1,5 @@
-#include <inttypes.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef WWW_H
+#define WWW_H
 #include <time.h>
 
 static const char url_part[] =
@@ -11,3 +9,5 @@ static const char url_part[] =
 char *format_url(const char *const url, const struct tm date);
 
 void download_url(const char *const url, const char *const filename);
+
+#endif
