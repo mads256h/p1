@@ -22,7 +22,6 @@ function(set_project_warnings project_name)
   set(GCC_WARNINGS
     ${CLANG_WARNINGS}
     #    -Warith-conversion # Doesnt work with old gcc
-    -Wtraditional-conversion
     -Wformat-overflow=2
     -Wmisleading-indentation
     -Wduplicated-cond
