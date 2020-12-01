@@ -189,7 +189,7 @@ int command_settings(size_t argc,
 {
   double value;
 
-  HANDLE_HELP("set \"key\" value OR get \"key\"");
+  HANDLE_HELP("set <key> <value> OR get <key>");
 
   if (argc < 2 || argc > 4) { goto help; }
 
@@ -242,7 +242,7 @@ int command_download(size_t argc,
   const struct tm today = date_today();
   const struct tm tomorrow = date_tomorrow(today);
 
-  HANDLE_HELP("OR download \"date\"");
+  HANDLE_HELP("[date]");
   (void)data;
 
   if (argc == 2) { date = string_to_date(argv[1]); }
@@ -278,7 +278,7 @@ int command_cheapest(size_t argc,
   size_t start, end;
   struct tm date1 = date_today(), date2;
 
-  HANDLE_HELP("start end OR start end date");
+  HANDLE_HELP("<start> <end> [date]");
 
   if (argc < 3) { goto help; }
 
