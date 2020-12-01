@@ -187,9 +187,6 @@ int command_settings(size_t argc,
   const char *const argv[],
   struct command_data *data)
 {
-  double charge;
-  double capacity;
-  double rate;
   double value;
 
   HANDLE_HELP("set \"key\" value OR get \"key\"");

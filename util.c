@@ -4,10 +4,12 @@
 #include <string.h>
 #include <time.h>
 
+
 #include "util.h"
 
 
 #define SECS_IN_DAY (60 * 60 * 24)
+
 
 char *str_dup(const char *const str);
 
