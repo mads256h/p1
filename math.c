@@ -45,6 +45,9 @@ size_t *find_cheapest_hours(const size_t start,
 
   assert(used_prices);
 
+  hours_to_charge =
+    hours_to_charge > end - start ? end - start : hours_to_charge;
+
   /* Loop through each hour it takes to charge the car.
    * And find the cheapest hours in the time range denoted by
    * start and end*/
