@@ -21,7 +21,7 @@ void print_prices_day(const struct tm date,
   const double prices[HOURS_USED]);
 
 /* Prints a date followed by an hour interval */
-void print_date_hours(const struct tm date, const int hour);
+void print_date_hours(const struct tm date, const size_t hour);
 
 
 size_t *find_cheapest_hours(const size_t start,
@@ -76,8 +76,6 @@ double average(const double numbers[], const size_t size)
   double sum = 0.0;
 
   assert(numbers);
-
-  assert(size >= 0);
 
   if (size == 0) { return 0.0; }
 
@@ -154,12 +152,12 @@ void print_prices_day(const struct tm date,
   }
 }
 
-void print_date_hours(const struct tm date, const int hour)
+void print_date_hours(const struct tm date, const size_t hour)
 {
   char date_str[DATE_SIZE + 1];
 
   format_date(date_str, date);
 
 
-  printf("%s T %02d-%02d", date_str, hour, hour + 1);
+  printf("%s T %02d-%02d", date_str, (int)hour, (int)hour + 1);
 }
