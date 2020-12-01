@@ -91,13 +91,11 @@ json_object *
 json_object *get_jso_from_array_index(json_object *const jso,
   const size_t index)
 {
-  size_t length;
   assert(jso);
 
   assert(json_object_get_type(jso) == json_type_array);
-  length = json_object_array_length(jso);
 
-  assert(index < length);
+  assert(index < json_object_array_length(jso));
 
   return json_object_array_get_idx(jso, index);
 }

@@ -66,7 +66,8 @@ int command_loop(void)
     if (!line) { continue; }
 
     split = split_string(line, ' ');
-    exit = handle_command(split.size, split.strings, &data);
+    exit =
+      handle_command(split.size, (const char *const *)split.strings, &data);
     free_split_string(split);
     free(line);
   } while (exit == 0);
