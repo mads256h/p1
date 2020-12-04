@@ -41,13 +41,13 @@
   }
 
 /* Loads the users saved config */
-struct command_data load_config(void);
+static struct command_data load_config(void);
 
 /* Reads in a line from the terminal */
-char *readline(void);
+static char *readline(void);
 
 /* Runs the command specified */
-int handle_command(size_t argc,
+static int handle_command(size_t argc,
   const char *const argv[],
   struct command_data *data);
 
@@ -75,7 +75,7 @@ int command_loop(void)
   return exit;
 }
 
-struct command_data load_config(void)
+static struct command_data load_config(void)
 {
   FILE *const file = fopen("config.cfg", "r");
   struct command_data data;
@@ -110,7 +110,7 @@ struct command_data load_config(void)
   return data;
 }
 
-char *readline(void)
+static char *readline(void)
 {
   size_t i = 0;
   int c = EOF;
@@ -129,7 +129,7 @@ char *readline(void)
   return string;
 }
 
-int handle_command(size_t argc,
+static int handle_command(size_t argc,
   const char *const argv[],
   struct command_data *data)
 {
