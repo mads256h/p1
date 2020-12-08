@@ -11,17 +11,17 @@
 
 
 /*Converts from charge to how long time to fully charge the battery in hours*/
-double charge_to_hours(const double charge,
+static double charge_to_hours(const double charge,
   const double capacity,
   const double charge_rate);
 
 /* Prints one day of prices */
-void print_prices_day(const struct tm date,
+static void print_prices_day(const struct tm date,
   const size_t start,
   const double prices[HOURS_USED]);
 
 /* Prints a date followed by an hour interval */
-void print_date_hours(const struct tm date, const size_t hour);
+static void print_date_hours(const struct tm date, const size_t hour);
 
 
 size_t *find_cheapest_hours(const size_t start,
@@ -131,7 +131,7 @@ void print_cheapest_prices(const struct tm date_today,
   printf("Saved: %.2f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
 }
 
-double charge_to_hours(const double charge,
+static double charge_to_hours(const double charge,
   const double capacity,
   const double charge_rate)
 {
@@ -143,7 +143,7 @@ double charge_to_hours(const double charge,
 }
 
 
-void print_prices_day(const struct tm date,
+static void print_prices_day(const struct tm date,
   const size_t start,
   const double prices[HOURS_USED])
 {
@@ -155,7 +155,7 @@ void print_prices_day(const struct tm date,
   }
 }
 
-void print_date_hours(const struct tm date, const size_t hour)
+static void print_date_hours(const struct tm date, const size_t hour)
 {
   char date_str[DATE_SIZE + 1];
 
