@@ -104,7 +104,8 @@ void print_cheapest_prices(const struct tm date_today,
   const struct tm date_tomorrow,
   const double prices[HOURS_USED],
   const size_t cheapest_hours[],
-  const size_t cheapest_hours_length)
+  const size_t cheapest_hours_length,
+  const size_t start_hour)
 {
   size_t i, hour;
   double prices_average, cheapest_average;
@@ -125,7 +126,7 @@ void print_cheapest_prices(const struct tm date_today,
   for (i = 0; i < cheapest_hours_length; i++) {
     selected_price[i] = prices[cheapest_hours[i]];
   }
-  prices_average = average(prices, HOURS_USED);
+  prices_average = average(&prices[start_hour], cheapest_hours_length);
   cheapest_average = average(selected_price, cheapest_hours_length);
   free(selected_price);
   printf("Saved: %.2f%%\n", (1.0 - cheapest_average / prices_average) * 100.0);
