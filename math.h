@@ -1,5 +1,7 @@
 #ifndef MATH_H
 #define MATH_H
+
+
 #include <stddef.h>
 #include <stdint.h>
 #include <time.h>
@@ -32,5 +34,6 @@ void print_cheapest_prices(const struct tm date_today,
   const size_t cheapest_hours[],
   const size_t cheapest_hours_length,
   const size_t start_hour);
+
 
 #endif

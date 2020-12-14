@@ -17,6 +17,18 @@
 #define TO_STRING(s) TO_STRING_IMPL(s)
 #define TO_STRING_IMPL(s) #s
 
+/* Handles help argument */
+#define HANDLE_HELP(usage)                           \
+  do {                                               \
+    if (argc == 2 && strcmp(argv[1], "help") == 0) { \
+      goto help;                                     \
+    help:                                            \
+      printf("USAGE: %s %s\n", argv[0], usage);      \
+      fflush(stdout);                                \
+      return EXIT_SUCCESS;                           \
+    }                                                \
+  } while (0)
+
 /* Sets a key in settings */
 #define SETTINGS_SET_DOUBLE_HELPER(key, condition, errortext) \
   if (strcmp(argv[2], TO_STRING(key)) == 0) {                 \
@@ -40,6 +52,53 @@
     return EXIT_SUCCESS;                      \
   }
 
+
+/* Holds data used between commands */
+struct command_data
+{
+  /* capacity kWh */
+  double capacity;
+
+  /* charge rate */
+  double rate;
+
+  /* charge percent */
+  double charge;
+
+  /* 0 for none 1 for dk1 2 for dk2 */
+  int region;
+};
+
+/* Command function signature */
+typedef int(
+  command_func)(const size_t, const char *const[], struct command_data *const);
+
+/* A command entry in the commands array */
+struct command_entry
+{
+  const char *const name;
+  command_func *const command;
+};
+
+/* Command function prototypes */
+static command_func command_help;
+static command_func command_quit;
+static command_func command_settings;
+static command_func command_download;
+static command_func command_cheapest;
+static command_func command_save;
+
+/* Holds all registered commands */
+static const struct command_entry commands[] = {
+  /* {"command name", command_function }, */
+  { "help", command_help },
+  { "quit", command_quit },
+  { "settings", command_settings },
+  { "download", command_download },
+  { "cheapest", command_cheapest },
+  { "save", command_save }
+};
+
 /* Loads the users saved config */
 static struct command_data load_config(void);
 
@@ -47,9 +106,9 @@ static struct command_data load_config(void);
 static char *readline(void);
 
 /* Runs the command specified */
-static int handle_command(size_t argc,
+static int handle_command(const size_t argc,
   const char *const argv[],
-  struct command_data *data);
+  struct command_data *const data);
 
 
 int command_loop(void)
@@ -129,9 +188,9 @@ static char *readline(void)
   return string;
 }
 
-static int handle_command(size_t argc,
+static int handle_command(const size_t argc,
   const char *const argv[],
-  struct command_data *data)
+  struct command_data *const data)
 {
   size_t i;
 
@@ -147,9 +206,9 @@ static int handle_command(size_t argc,
 }
 
 
-int command_help(size_t argc,
+static int command_help(const size_t argc,
   const char *const argv[],
-  struct command_data *data)
+  struct command_data *const data)
 {
   size_t i;
   const char *arguments[2];
@@ -171,9 +230,9 @@ int command_help(size_t argc,
 }
 
 
-int command_quit(size_t argc,
+static int command_quit(const size_t argc,
   const char *const argv[],
-  struct command_data *data)
+  struct command_data *const data)
 {
   (void)data;
 
@@ -184,9 +243,9 @@ int command_quit(size_t argc,
 }
 
 
-int command_settings(size_t argc,
+static int command_settings(const size_t argc,
   const char *const argv[],
-  struct command_data *data)
+  struct command_data *const data)
 {
   double value;
 
@@ -233,9 +292,9 @@ int command_settings(size_t argc,
   goto help;
 }
 
-int command_download(size_t argc,
+static int command_download(const size_t argc,
   const char *const argv[],
-  struct command_data *data)
+  struct command_data *const data)
 {
   char *url;
   char filename[DATE_FILE_SIZE + 1] = { 0 };
@@ -265,9 +324,9 @@ int command_download(size_t argc,
   return EXIT_SUCCESS;
 }
 
-int command_cheapest(size_t argc,
+static int command_cheapest(const size_t argc,
   const char *const argv[],
-  struct command_data *data)
+  struct command_data *const data)
 {
   char filename[DATE_FILE_SIZE + 1] = { 0 };
   char *file_content;
@@ -353,9 +412,9 @@ int command_cheapest(size_t argc,
   return EXIT_SUCCESS;
 }
 
-int command_save(size_t argc,
+static int command_save(const size_t argc,
   const char *const argv[],
-  struct command_data *data)
+  struct command_data *const data)
 {
   FILE *file;
   HANDLE_HELP("");
