@@ -346,7 +346,7 @@ int command_cheapest(size_t argc,
     data->rate,
     region_prices,
     &length);
-  print_cheapest_prices(date1, date2, region_prices, cheapest, length);
+  print_cheapest_prices(date1, date2, region_prices, cheapest, length, start);
 
   free(cheapest);
 

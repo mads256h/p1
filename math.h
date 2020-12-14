@@ -30,6 +30,7 @@ void print_cheapest_prices(const struct tm date_today,
   const struct tm date_tomorrow,
   const double prices[HOURS_USED],
   const size_t cheapest_hours[],
-  const size_t cheapest_hours_length);
+  const size_t cheapest_hours_length,
+  const size_t start_hour);
 
 #endif
